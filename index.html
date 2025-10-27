@@ -8,475 +8,148 @@
     <meta name="theme-color" content="#8b5cf6" />
     <style>
       :root {
-        --bg: #0b0b0f;          /* near-black */
-        --bg-elev: #111118;     /* elevated surfaces */
-        --fg: #e7e7ff;          /* primary text */
-        --muted: #b6b6d1;       /* secondary text */
-        --accent: #8b5cf6;      /* purple */
-        --accent-2: #c084fc;    /* lighter purple */
-        --danger: #ef4444;      /* red for gameover */
-        --ok: #10b981;          /* green for success */
+        --bg: #0b0b0f;
+        --fg: #e7e7ff;
+        --muted: #b6b6d1;
+        --accent: #8b5cf6;
+        --accent-2: #c084fc;
         --card: linear-gradient(180deg, rgba(139,92,246,0.08), rgba(139,92,246,0.03));
-        --ring: rgba(139,92,246,0.35);
-        --shadow: 0 10px 30px rgba(0,0,0,.45), 0 2px 10px rgba(139,92,246,.18);
       }
-
       * { box-sizing: border-box; }
-      html, body { height: 100%; }
       body {
         margin: 0;
-        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        font-family: system-ui, sans-serif;
+        background: var(--bg);
         color: var(--fg);
-        background: radial-gradient(1200px 600px at 80% -200px, rgba(139,92,246,.22), transparent 60%),
-                    radial-gradient(1000px 500px at -100px -120px, rgba(192,132,252,.18), transparent 60%),
-                    var(--bg);
         line-height: 1.5;
+        padding: 0 16px;
       }
-
-      a { color: inherit; text-decoration: none; }
-      .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 24px;
-      }
-
-      header.site {
-        display: flex; align-items: center; justify-content: space-between;
-        gap: 16px; padding: 12px 0 24px;
-      }
-
-      .brand {
-        display: flex; align-items: center; gap: 12px;
-      }
-      .brand-logo {
-        width: 42px; height: 42px; border-radius: 12px;
-        display: grid; place-items: center;
-        background: conic-gradient(from 210deg, rgba(139,92,246,.3), rgba(139,92,246,.6), rgba(192,132,252,.35));
-        box-shadow: inset 0 0 18px rgba(139,92,246,.6), 0 8px 24px rgba(139,92,246,.25);
-      }
-      .brand-logo svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
-      .brand h1 { font-size: 1.25rem; margin: 0; letter-spacing: .4px; }
-      .tag { color: var(--muted); font-size: .95rem; }
-
-      nav a {
-        padding: 10px 14px; border-radius: 12px; color: var(--fg);
-        background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.22);
-        transition: transform .15s ease, background .2s ease, border-color .2s ease;
-      }
-      nav a:hover { transform: translateY(-1px); background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.35); }
-
-      main.grid {
-        display: grid; gap: 24px; align-items: start;
-        grid-template-columns: 1.3fr 1fr; /* game larger than links on desktop */
-      }
-      @media (max-width: 980px) {
-        main.grid { grid-template-columns: 1fr; }
-      }
-
+      .container { max-width: 900px; margin: 0 auto; }
+      header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; }
+      h1 { margin: 0; font-size: 1.5rem; color: var(--accent-2); }
+      nav a { color: var(--fg); margin-left: 1rem; text-decoration: none; }
       .card {
         background: var(--card);
         border: 1px solid rgba(139,92,246,.18);
-        border-radius: 18px; padding: 18px; box-shadow: var(--shadow);
-        backdrop-filter: blur(4px);
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 24px;
       }
-      .card h2 { margin: 0 0 12px; font-size: 1.15rem; font-weight: 700; }
-      .sub { color: var(--muted); font-size: .95rem; }
-
-      /* ===== Links ===== */
-      .links {
-        display: grid; gap: 12px;
-      }
-      .link-item {
-        display: flex; align-items: center; justify-content: space-between; gap: 16px;
-        padding: 14px; border-radius: 14px; background: rgba(255,255,255,.02);
-        border: 1px solid rgba(139,92,246,.18);
-        transition: background .2s ease, border-color .2s ease, transform .15s ease;
-      }
-      .link-item:hover { background: rgba(255,255,255,.04); border-color: rgba(139,92,246,.35); transform: translateY(-1px); }
-      .link-left { display: flex; align-items: center; gap: 12px; }
-      .link-left svg { width: 22px; height: 22px; opacity: .9; }
-      .link-title { font-weight: 600; }
-      .link-desc { color: var(--muted); font-size: .9rem; }
-      .btn {
-        padding: 10px 14px; border-radius: 12px; font-weight: 600; border: 1px solid rgba(139,92,246,.35);
-        background: linear-gradient(180deg, rgba(139,92,246,.25), rgba(139,92,246,.15));
-      }
-
-      /* ===== Flappy Game ===== */
-      .game-wrap { position: relative; }
       canvas#gameCanvas {
-        width: 100%; /* responsive scale */
-        height: auto; aspect-ratio: 9/16; /* keep portrait aspect */
-        display: block; border-radius: 14px; background: linear-gradient(180deg, #151521, #0b0b0f);
-        border: 1px solid rgba(139,92,246,.25);
+        width: 100%;
+        height: auto;
+        aspect-ratio: 3/4; /* shorter window for normal screens */
+        border-radius: 12px;
+        background: linear-gradient(180deg, #151521, #0b0b0f);
       }
-      .hud { display: flex; align-items: center; justify-content: space-between; margin: 8px 2px 0; }
-      .score { font-weight: 800; letter-spacing: .5px; }
-      .controls { display: flex; gap: 8px; }
-      .controls button { cursor: pointer; }
-      .pill { padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(139,92,246,.35); background: rgba(139,92,246,.16); font-weight: 700; }
-      .hint { color: var(--muted); font-size: .9rem; margin-top: 6px; }
-
-      .overlay {
-        position: absolute; inset: 0; display: grid; place-items: center;
-        pointer-events: none; /* enabled only when visible via class */
-      }
-      .overlay > .panel {
-        pointer-events: auto;
-        background: rgba(10,10,14,.8); border: 1px solid rgba(139,92,246,.35); border-radius: 16px; padding: 18px 20px; text-align: center; box-shadow: var(--shadow);
-      }
-      .overlay h3 { margin: 0 0 6px; }
-      .overlay .small { color: var(--muted); font-size: .95rem; }
-      .overlay .cta { margin-top: 12px; }
-
-      .hidden { display: none !important; }
-
-      footer { margin: 24px 0 12px; text-align: center; color: var(--muted); font-size: .9rem; }
+      footer { text-align: center; color: var(--muted); margin: 16px 0; font-size: .9rem; }
     </style>
   </head>
   <body>
     <div class="container">
-      <header class="site">
-        <div class="brand">
-          <div class="brand-logo" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M12 2l2.2 5.7 6.1.5-4.7 3.8 1.5 5.9L12 15.8 6.9 17.9l1.5-5.9L3.7 8.2l6.1-.5L12 2z" stroke="white" stroke-opacity=".9" stroke-width="1.2" />
-            </svg>
-          </div>
-          <div>
-            <h1>pyroashes.lol</h1>
-            <div class="tag">Modern dark hub • links + game</div>
-          </div>
-        </div>
+      <header>
+        <h1>pyroashes.lol</h1>
         <nav>
           <a href="#game">Game</a>
           <a href="#links">Links</a>
         </nav>
       </header>
 
-      <main class="grid">
-        <!-- ===== Flappy Section ===== -->
-        <section id="game" class="card">
-          <h2>Flappy</h2>
-          <div class="sub">Tap / click / press <kbd>Space</kbd> or <kbd>↑</kbd> to flap. Pass pipes, rack up points.</div>
+      <section id="game" class="card">
+        <h2>Flappy</h2>
+        <canvas id="gameCanvas" width="360" height="480"></canvas>
+      </section>
 
-          <div class="game-wrap">
-            <canvas id="gameCanvas" width="360" height="640" aria-label="Flappy game area"></canvas>
+      <section id="links" class="card">
+        <h2>My Links</h2>
+        <ul>
+          <li><a id="discordLink" target="_blank">Discord</a></li>
+          <li><a id="githubLink" target="_blank">GitHub</a></li>
+          <li><a id="steamLink" target="_blank">Steam</a></li>
+        </ul>
+      </section>
 
-            <div id="overlay-ready" class="overlay">
-              <div class="panel">
-                <h3>Ready?</h3>
-                <div class="small">Tap, click, Space or ↑ to start</div>
-                <div class="cta"><button id="startBtn" class="btn">Start Game</button></div>
-              </div>
-            </div>
-
-            <div id="overlay-gameover" class="overlay hidden">
-              <div class="panel">
-                <h3>Game Over</h3>
-                <div class="small" id="finalScore">Score: 0</div>
-                <div class="cta"><button id="restartBtn" class="btn">Play Again</button></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="hud">
-            <div class="score">Score: <span id="score">0</span></div>
-            <div class="controls">
-              <button id="pauseBtn" class="pill" aria-pressed="false">Pause</button>
-              <button id="muteBtn" class="pill" aria-pressed="false">Mute</button>
-            </div>
-          </div>
-          <div class="hint">Pro tip: smaller gaps as you score higher. Good luck!</div>
-        </section>
-
-        <!-- ===== Links Section ===== -->
-        <section id="links" class="card">
-          <h2>My Links</h2>
-          <div class="sub">All the places you can find me.</div>
-
-          <div class="links">
-            <a id="discordLink" class="link-item" target="_blank" rel="noopener noreferrer">
-              <div class="link-left">
-                <!-- Discord Icon -->
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20.317 4.37A18.134 18.134 0 0016.558 3c-.2.35-.43.82-.59 1.19a16.263 16.263 0 00-3.936 0c-.16-.37-.39-.84-.591-1.19-1.398.254-2.73.7-3.759 1.37C4.156 7.082 3.2 9.95 3.5 12.77c1.55 1.156 3.05 1.86 4.508 2.32.35-.48.66-1 .92-1.55-.507-.192-.99-.43-1.45-.7.12-.09.237-.183.35-.28 2.8 1.31 5.84 1.31 8.62 0 .115.097.231.19.351.28-.46.27-.944.507-1.45.7.26.55.57 1.07.92 1.55 1.457-.46 2.958-1.164 4.508-2.32.37-3.485-.63-6.318-2.86-8.4zM9.68 12.1c-.68 0-1.24-.63-1.24-1.4 0-.77.55-1.4 1.24-1.4.69 0 1.25.63 1.24 1.4 0 .77-.55 1.4-1.24 1.4zm4.64 0c-.69 0-1.25-.63-1.25-1.4 0-.77.56-1.4 1.25-1.4s1.24.63 1.24 1.4c0 .77-.55 1.4-1.24 1.4z"/></svg>
-                <div>
-                  <div class="link-title">Discord</div>
-                  <div class="link-desc">Join the server / DM me</div>
-                </div>
-              </div>
-              <span class="btn">Open</span>
-            </a>
-
-            <a id="githubLink" class="link-item" target="_blank" rel="noopener noreferrer">
-              <div class="link-left">
-                <!-- GitHub Icon -->
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 .5a11.5 11.5 0 00-3.64 22.41c.58.11.79-.25.79-.56v-2c-3.22.71-3.9-1.38-3.9-1.38-.53-1.34-1.31-1.7-1.31-1.7-1.07-.73.08-.72.08-.72 1.18.08 1.8 1.22 1.8 1.22 1.05 1.81 2.74 1.29 3.41.99.11-.79.41-1.29.75-1.59-2.57-.29-5.27-1.29-5.27-5.76 0-1.27.46-2.31 1.21-3.12-.12-.3-.52-1.53.12-3.19 0 0 .98-.32 3.21 1.19a11.1 11.1 0 015.84 0C16.34 6 17.32 6.32 17.32 6.32c.64 1.66.24 2.89.12 3.19.75.81 1.21 1.85 1.21 3.12 0 4.49-2.7 5.47-5.28 5.76.42.36.8 1.08.8 2.17v3.22c0 .31.21.67.8.56A11.5 11.5 0 0012 .5z"/></svg>
-                <div>
-                  <div class="link-title">GitHub</div>
-                  <div class="link-desc">My repos & projects</div>
-                </div>
-              </div>
-              <span class="btn">Open</span>
-            </a>
-
-            <a id="steamLink" class="link-item" target="_blank" rel="noopener noreferrer">
-              <div class="link-left">
-                <!-- Steam Icon -->
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M21.996 12.004A9.996 9.996 0 1110.19 2.122l-.005.003.002.001.002.001a9.997 9.997 0 0011.81 9.877l-.003-.002.003.002-.004 0zM6.27 14.8l2.21.93a2.7 2.7 0 002.67-4.7l-2.17-.92a3.53 3.53 0 11-2.71 4.68zm11.43-9.11a3.59 3.59 0 100 7.18 3.59 3.59 0 000-7.18zm0 1.8a1.79 1.79 0 110 3.58 1.79 1.79 0 010-3.58z"/></svg>
-                <div>
-                  <div class="link-title">Steam</div>
-                  <div class="link-desc">Profile & games</div>
-                </div>
-              </div>
-              <span class="btn">Open</span>
-            </a>
-          </div>
-        </section>
-      </main>
-
-      <footer>
-        © <span id="year"></span> pyroashes.lol • All rights reserved.
-      </footer>
+      <footer>© <span id="year"></span> pyroashes.lol</footer>
     </div>
 
     <script>
-      // ==========================
-      // 🔗 PASTE YOUR LINKS HERE
-      // ==========================
-      // Replace the values with your actual URLs. You only need to edit this block.
-      // Example: discord: 'https://discord.gg/abc123'
       const LINKS = {
         discord: 'PASTE_DISCORD_URL_HERE',
         github: 'PASTE_GITHUB_URL_HERE',
         steam: 'PASTE_STEAM_URL_HERE'
       };
-
-      (function initLinks(){
-        const map = [
-          ['discordLink', LINKS.discord],
-          ['githubLink', LINKS.github],
-          ['steamLink', LINKS.steam],
-        ];
-        map.forEach(([id, href]) => { const el = document.getElementById(id); if (el && href && !href.startsWith('PASTE_')) el.href = href; });
-      })();
-
       document.getElementById('year').textContent = new Date().getFullYear();
+      document.getElementById('discordLink').href = LINKS.discord;
+      document.getElementById('githubLink').href = LINKS.github;
+      document.getElementById('steamLink').href = LINKS.steam;
 
-      // ==========================
-      // 🕹️ FLAPPY (vanilla JS)
-      // ==========================
-      (function(){
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      // Simple Flappy game with wider pipe gaps and smaller height
+      const canvas = document.getElementById('gameCanvas');
+      const ctx = canvas.getContext('2d');
+      let bird = {x: 50, y: 150, vy: 0};
+      let pipes = [];
+      let frame = 0;
+      let score = 0;
+      const gravity = 0.4;
+      const flap = -7;
+      const gap = 200; // wider gap between pipes
+      const pipeWidth = 60;
+      const speed = 2;
 
-        // Scale canvas for crisp rendering on high-DPI screens
-        function resizeCanvas(){
-          const rect = canvas.getBoundingClientRect();
-          const w = Math.round(rect.width);
-          const h = Math.round(rect.height);
-          canvas.width = Math.floor(w * dpr);
-          canvas.height = Math.floor(h * dpr);
-          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        }
-        resizeCanvas();
-        addEventListener('resize', resizeCanvas);
+      function flapBird(){ bird.vy = flap; }
+      document.addEventListener('keydown', e => { if (e.code === 'Space') flapBird(); });
+      canvas.addEventListener('pointerdown', flapBird);
 
-        // Game constants
-        const G = 0.5;             // gravity
-        const FLAP = -8.5;         // flap impulse
-        const PIPE_GAP_BASE = 160; // starting vertical gap
-        const PIPE_WIDTH = 64;
-        const PIPE_SPACING = 220;  // horizontal distance between pipes
-        const SPEED = 2.2;         // horizontal speed
-        const MAX_ROT = Math.PI/3; // max rotation
+      function reset(){
+        bird = {x: 50, y: 150, vy: 0};
+        pipes = [];
+        score = 0;
+      }
 
-        // Sounds (tiny bleeps via WebAudio so we avoid external files)
-        const audioCtx = typeof AudioContext !== 'undefined' ? new (window.AudioContext || window.webkitAudioContext)() : null;
-        let muted = false;
-        function beep(type='square', freq=880, dur=0.07, vol=0.04){
-          if (!audioCtx || muted) return;
-          const o = audioCtx.createOscillator();
-          const g = audioCtx.createGain();
-          o.type = type; o.frequency.value = freq; g.gain.value = vol;
-          o.connect(g); g.connect(audioCtx.destination);
-          o.start(); o.stop(audioCtx.currentTime + dur);
-        }
+      function spawnPipe(){
+        const top = Math.random() * 200 + 50;
+        pipes.push({x: canvas.width, top: top, bottom: top + gap});
+      }
 
-        // Game state
-        let state = 'ready'; // 'ready' | 'playing' | 'gameover'
-        const bird = { x: 100, y: 260, vy: 0, r: 0 };
-        let pipes = []; // {x, top, bottom}
-        let frame = 0;
-        let score = 0; let best = Number(localStorage.getItem('flappyBest') || 0);
+      function loop(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        frame++;
+        if(frame % 100 === 0) spawnPipe();
 
-        const overlayReady = document.getElementById('overlay-ready');
-        const overlayOver = document.getElementById('overlay-gameover');
-        const finalScore = document.getElementById('finalScore');
-        const scoreEl = document.getElementById('score');
-        const startBtn = document.getElementById('startBtn');
-        const restartBtn = document.getElementById('restartBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const muteBtn = document.getElementById('muteBtn');
+        bird.vy += gravity;
+        bird.y += bird.vy;
 
-        let paused = false;
+        // Draw bird
+        ctx.fillStyle = '#c084fc';
+        ctx.beginPath();
+        ctx.arc(bird.x, bird.y, 10, 0, Math.PI*2);
+        ctx.fill();
 
-        function reset(){
-          bird.x = 100; bird.y = canvas.height/2/dpr; bird.vy = 0; bird.r = 0;
-          pipes = []; frame = 0; score = 0; scoreEl.textContent = score;
-        }
-
-        function start(){
-          reset(); state = 'playing'; overlayReady.classList.add('hidden'); overlayOver.classList.add('hidden');
-          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-          beep('square', 1200, .08, .05);
-        }
-        function gameOver(){
-          state = 'gameover';
-          beep('sawtooth', 220, .2, .05);
-          overlayOver.classList.remove('hidden');
-          finalScore.textContent = `Score: ${score}  •  Best: ${best = Math.max(best, score)}`;
-          localStorage.setItem('flappyBest', String(best));
-        }
-
-        function flap(){ if (state === 'ready') start(); if (state !== 'playing') return; bird.vy = FLAP; beep('square', 1000, .06, .045); }
-
-        // Input
-        canvas.addEventListener('pointerdown', flap);
-        document.addEventListener('keydown', (e)=>{
-          if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); flap(); }
-          if (e.code === 'KeyP') togglePause();
-          if (e.code === 'KeyM') toggleMute();
-          if (state === 'gameover' && (e.code === 'Space' || e.code === 'Enter')) start();
+        // Draw pipes
+        ctx.fillStyle = '#1c1c28';
+        pipes.forEach(p => {
+          p.x -= speed;
+          ctx.fillRect(p.x, 0, pipeWidth, p.top);
+          ctx.fillRect(p.x, p.bottom, pipeWidth, canvas.height - p.bottom);
+          if (p.x + pipeWidth < bird.x && !p.scored){ score++; p.scored = true; }
+          if (
+            bird.x + 10 > p.x && bird.x - 10 < p.x + pipeWidth &&
+            (bird.y - 10 < p.top || bird.y + 10 > p.bottom)
+          ) reset();
         });
-        startBtn.addEventListener('click', start);
-        restartBtn.addEventListener('click', start);
+        pipes = pipes.filter(p => p.x + pipeWidth > 0);
 
-        function togglePause(){
-          paused = !paused; pauseBtn.setAttribute('aria-pressed', String(paused)); pauseBtn.textContent = paused ? 'Resume' : 'Pause';
-        }
-        function toggleMute(){
-          muted = !muted; muteBtn.setAttribute('aria-pressed', String(muted)); muteBtn.textContent = muted ? 'Unmute' : 'Mute';
-        }
-        pauseBtn.addEventListener('click', togglePause);
-        muteBtn.addEventListener('click', toggleMute);
+        // Floor and ceiling collision
+        if (bird.y > canvas.height || bird.y < 0) reset();
 
-        // Helpers
-        function rand(min, max){ return Math.random() * (max - min) + min; }
-        function spawnPipe(){
-          const gap = Math.max(100, PIPE_GAP_BASE - Math.min(80, score * 2.5)); // gets tighter with score
-          const margin = 40; // top/bottom margin
-          const topHeight = rand(margin, canvas.height/dpr - margin - gap);
-          pipes.push({ x: canvas.width/dpr + PIPE_WIDTH, top: topHeight, bottom: topHeight + gap, scored: false });
-        }
+        // Score
+        ctx.fillStyle = '#fff';
+        ctx.font = '20px sans-serif';
+        ctx.fillText('Score: ' + score, 10, 25);
 
-        function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh){
-          return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
-        }
-
-        // Drawing
-        function drawBackground(){
-          const w = canvas.width/dpr, h = canvas.height/dpr;
-          // subtle stars
-          ctx.save();
-          ctx.globalAlpha = .3;
-          for (let i=0;i<40;i++) { const x = (i*97 + frame*0.6) % w; const y = (i*53 % h); ctx.fillStyle = i%7? '#8b5cf6':'#c084fc'; ctx.fillRect(x, y, 2, 2); }
-          ctx.restore();
-
-          // floor gradient
-          const grd = ctx.createLinearGradient(0, h-100, 0, h);
-          grd.addColorStop(0, 'rgba(139,92,246,.15)');
-          grd.addColorStop(1, 'rgba(11,11,15,1)');
-          ctx.fillStyle = grd; ctx.fillRect(0, h-120, w, 120);
-        }
-
-        function drawBird(){
-          const x = bird.x, y = bird.y;
-          ctx.save(); ctx.translate(x, y); ctx.rotate(Math.max(-.35, Math.min(MAX_ROT, bird.vy/18)));
-          // body
-          const r = 14;
-          const grd = ctx.createRadialGradient(0,0,4, 0,0,r);
-          grd.addColorStop(0, '#c084fc'); grd.addColorStop(1, '#8b5cf6');
-          ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill();
-          // wing
-          ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.beginPath(); ctx.ellipse(-6, 4, 7, 4, -.3, 0, Math.PI*2); ctx.fill();
-          // eye
-          ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(5, -4, 3.2, 0, Math.PI*2); ctx.fill();
-          ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(6, -5, 1.5, 0, Math.PI*2); ctx.fill();
-          // beak
-          ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(18, 3); ctx.lineTo(12, 6); ctx.closePath(); ctx.fill();
-          ctx.restore();
-        }
-
-        function drawPipes(){
-          const w = canvas.width/dpr, h = canvas.height/dpr;
-          ctx.fillStyle = '#1c1c28';
-          pipes.forEach(p => {
-            // top pipe
-            ctx.fillStyle = '#1c1c28';
-            ctx.fillRect(p.x, 0, PIPE_WIDTH, p.top);
-            // cap
-            ctx.fillStyle = '#2a2a3a'; ctx.fillRect(p.x-2, p.top-12, PIPE_WIDTH+4, 12);
-            // bottom pipe
-            ctx.fillStyle = '#1c1c28';
-            ctx.fillRect(p.x, p.bottom, PIPE_WIDTH, h - p.bottom);
-            ctx.fillStyle = '#2a2a3a'; ctx.fillRect(p.x-2, p.bottom, PIPE_WIDTH+4, 12);
-            // accent lines
-            ctx.fillStyle = 'rgba(139,92,246,.35)';
-            ctx.fillRect(p.x + PIPE_WIDTH - 10, 0, 2, p.top);
-            ctx.fillRect(p.x + PIPE_WIDTH - 10, p.bottom, 2, h - p.bottom);
-          });
-        }
-
-        function drawScore(){
-          ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.font = '700 24px ui-sans-serif, system-ui, -apple-system';
-          ctx.fillText(String(score), 12, 30);
-        }
-
-        // Main loop
-        let last = 0;
-        function loop(t){
-          requestAnimationFrame(loop);
-          if (paused) return;
-          const dt = Math.min(32, t - last); last = t; frame++;
-
-          const w = canvas.width/dpr, h = canvas.height/dpr;
-          ctx.clearRect(0, 0, w, h);
-
-          if (state !== 'playing') { drawBackground(); drawPipes(); drawBird(); drawScore(); return; }
-
-          // Spawn pipes
-          if (frame % Math.floor(PIPE_SPACING / SPEED) === 0) spawnPipe();
-
-          // Update pipes
-          for (let i = pipes.length - 1; i >= 0; i--) {
-            const p = pipes[i]; p.x -= SPEED;
-            if (!p.scored && p.x + PIPE_WIDTH < bird.x) { p.scored = true; score++; scoreEl.textContent = score; beep('triangle', 800, .04, .035); }
-            if (p.x < -PIPE_WIDTH - 10) pipes.splice(i, 1);
-          }
-
-          // Update bird
-          bird.vy += G; bird.y += bird.vy; bird.r = Math.max(-.25, Math.min(MAX_ROT, bird.vy/18));
-
-          // Collisions
-          const bw = 24, bh = 22; // bird bbox
-          const bx = bird.x - bw/2, by = bird.y - bh/2;
-          if (by < 0 || by + bh > h - 18) return gameOver();
-          for (const p of pipes) {
-            if (rectsOverlap(bx, by, bw, bh, p.x, 0, PIPE_WIDTH, p.top) || rectsOverlap(bx, by, bw, bh, p.x, p.bottom, PIPE_WIDTH, h - p.bottom)) {
-              return gameOver();
-            }
-          }
-
-          // Draw
-          drawBackground();
-          drawPipes();
-          drawBird();
-          drawScore();
-        }
         requestAnimationFrame(loop);
-      })();
+      }
+      loop();
     </script>
   </body>
 </html>

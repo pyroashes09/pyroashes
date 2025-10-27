@@ -11,7 +11,6 @@
       --ink:#b794f4;  --ink2:#6d28d9;
       --muted:#c4b5fd; --glow:#a78bfa;
       --accent:#8b5cf6; --accent2:#7c3aed;
-      --danger:#ef4444;
     }
     *{ box-sizing: border-box; }
     html,body{ height:100%; }
@@ -40,7 +39,7 @@
     .icon{ position:absolute; display:grid; place-items:center; width:clamp(64px,9vmin,96px); aspect-ratio:1/1; border-radius:16px;
       border:1px dashed rgba(167,139,250,.45); background:rgba(12,10,16,.55);
       box-shadow:0 8px 30px rgba(124,58,237,.18), inset 0 0 16px rgba(124,58,237,.10);
-      text-decoration:none; transition:transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease; outline:none;}
+      text-decoration:none; transition:transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease; outline:none; z-index:3;}
     .icon:hover,.icon:focus-visible{ transform:translateY(-3px) scale(1.03); background:rgba(20,16,28,.7);
       border-color:rgba(199,179,255,.75); box-shadow:0 16px 40px rgba(167,139,250,.28), inset 0 0 22px rgba(167,139,250,.18);}
     .icon[data-float="1"]{ animation:bob1 7s ease-in-out infinite;}
@@ -54,6 +53,7 @@
     .icon.github{  left:58%; bottom:16%; transform:rotate(-1deg);}
     .icon svg{ width:55%; height:55%;}
     .label{ position:absolute; bottom:-1.6rem; left:50%; transform:translateX(-50%); font-size:.8rem; color:rgba(208,191,255,.7); letter-spacing:.4px; white-space:nowrap; pointer-events:none;}
+
     @media (max-width:640px){
       .badge{ font-size:13px; padding:8px 12px;}
       .icon{ width:clamp(64px,22vw,92px); }
@@ -61,18 +61,23 @@
       .icon.discord{ right:8%; top:44%; transform:rotate(2deg);}
       .icon.github{ left:50%; bottom:10%; transform:translateX(-50%) rotate(-2deg);}
     }
-    .icon:focus-visible{ box-shadow:0 0 0 3px rgba(199,179,255,.4), 0 10px 30px rgba(167,139,250,.28), inset 0 0 22px rgba(167,139,250,.18);}
 
-    /* Game panel (right-middle) */
+    /* Game panel — CENTERED */
     .game-panel{
-      position:fixed; right:6%; top:50%; transform:translateY(-50%);
+      position:fixed;
+      left:50%; top:50%; transform:translate(-50%,-50%);
       width:min(92vw, 420px); max-width:420px; min-width:280px;
       background:rgba(12,10,16,.65);
       border:1px dashed rgba(167,139,250,.5);
       border-radius:18px; padding:14px;
       box-shadow:0 20px 50px rgba(124,58,237,.25), inset 0 0 22px rgba(124,58,237,.12);
       backdrop-filter: blur(6px);
+      z-index:2; /* icons stay clickable above if they overlap edges */
     }
+    @media (max-width: 640px){
+      .game-panel{ top:58%; left:50%; transform:translate(-50%,-50%); max-width:360px; }
+    }
+
     .game-header{ display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
     .tab{
       flex:1; text-align:center; padding:10px 12px; cursor:pointer; user-select:none;
@@ -83,6 +88,7 @@
     }
     .tab.active{ background:rgba(31,24,45,.9); color:#fff; box-shadow:inset 0 0 18px rgba(167,139,250,.22);}
     .tab:hover{ transform:translateY(-2px); }
+
     .game-area{
       position:relative; background:rgba(10,8,14,.6);
       border:1px dashed rgba(167,139,250,.4); border-radius:14px; overflow:hidden;
@@ -145,7 +151,7 @@
   </a>
   <!-- ===== /Links ===== -->
 
-  <!-- ===== Game Panel ===== -->
+  <!-- ===== Game Panel (center) ===== -->
   <section class="game-panel" aria-label="Game panel">
     <div class="game-header">
       <div class="tab active" data-game="tetris" tabindex="0">Tetris</div>
@@ -155,7 +161,6 @@
     <div class="game-area" id="gameArea">
       <div class="hud" id="hud"></div>
       <div class="overlay" id="overlay">lol ur bad</div>
-      <!-- Canvases/boards are injected here -->
     </div>
     <div class="btn-row">
       <button class="btn" id="startBtn">Start</button>
@@ -204,10 +209,8 @@
     startBtn.addEventListener('click', () => api && api.start());
     resetBtn.addEventListener('click', () => api && api.reset());
 
-    /* ===== Utilities ===== */
     function showLose(){
       overlay.classList.add('show');
-      // auto-hide after a bit for replay
       setTimeout(() => overlay.classList.remove('show'), 1500);
     }
     function randInt(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
@@ -223,33 +226,21 @@
 
       const W=10,H=20,S=24;
       let board = Array.from({length:H},()=>Array(W).fill(0));
-      const colors = {
-        0: 'rgba(0,0,0,0)',
-        1: '#a78bfa', 2: '#8b5cf6', 3: '#7c3aed', 4: '#6d28d9',
-        5: '#c4b5fd', 6: '#9d7ffb', 7: '#bfa3ff'
-      };
+      const colors = {0:'rgba(0,0,0,0)',1:'#a78bfa',2:'#8b5cf6',3:'#7c3aed',4:'#6d28d9',5:'#c4b5fd',6:'#9d7ffb',7:'#bfa3ff'};
       const pieces = [
-        [[1,1,1,1]],                                   // I
-        [[2,0,0],[2,2,2]],                             // J
-        [[0,0,3],[3,3,3]],                             // L
-        [[4,4],[4,4]],                                 // O
-        [[0,5,5],[5,5,0]],                             // S
-        [[0,6,0],[6,6,6]],                             // T
-        [[7,7,0],[0,7,7]]                              // Z
+        [[1,1,1,1]], [[2,0,0],[2,2,2]], [[0,0,3],[3,3,3]],
+        [[4,4],[4,4]], [[0,5,5],[5,5,0]], [[0,6,0],[6,6,6]], [[7,7,0],[0,7,7]]
       ];
       let cur = null, x=3, y=0, tick=0, speed=32, running=false, score=0, loopId=null;
 
       const helpText = 'Arrow keys move/rotate (↑), Space to hard drop.';
       function newPiece(){
-        cur = pieces[randInt(0,pieces.length-1)].map(r=>r.slice());
-        x=3; y=0;
+        cur = pieces[randInt(0,pieces.length-1)].map(r=>r.slice()); x=3; y=0;
         if(collide(x,y,cur)){ running=false; showLose(); }
       }
-      function rotate(m){ // clockwise
-        const n = m[0].length;
-        const res = Array.from({length:n},()=>Array(m.length).fill(0));
-        for(let i=0;i<m.length;i++) for(let j=0;j<n;j++) res[j][m.length-1-i]=m[i][j];
-        return res;
+      function rotate(m){
+        const n = m[0].length; const res = Array.from({length:n},()=>Array(m.length).fill(0));
+        for(let i=0;i<m.length;i++) for(let j=0;j<n;j++) res[j][m.length-1-i]=m[i][j]; return res;
       }
       function collide(px,py,shape){
         for(let i=0;i<shape.length;i++)
@@ -257,19 +248,11 @@
             if(shape[i][j] && (py+i>=H || px+j<0 || px+j>=W || board[py+i][px+j])) return true;
         return false;
       }
-      function merge(){
-        for(let i=0;i<cur.length;i++)
-          for(let j=0;j<cur[i].length;j++)
-            if(cur[i][j]) board[y+i][x+j]=cur[i][j];
-      }
+      function merge(){ for(let i=0;i<cur.length;i++) for(let j=0;j<cur[i].length;j++) if(cur[i][j]) board[y+i][x+j]=cur[i][j]; }
       function clearLines(){
         let lines=0;
         for(let i=H-1;i>=0;i--){
-          if(board[i].every(v=>v)){
-            board.splice(i,1);
-            board.unshift(Array(W).fill(0));
-            lines++; i++;
-          }
+          if(board[i].every(v=>v)){ board.splice(i,1); board.unshift(Array(W).fill(0)); lines++; i++; }
         }
         if(lines){ score += [0,40,100,300,1200][lines]; speed = Math.max(8, speed-1); }
       }
@@ -279,18 +262,12 @@
         if(val){ g.globalAlpha=.25; g.fillStyle='#000'; g.fillRect(j*S, i*S+S-6, S,6); g.globalAlpha=1; }
       }
       function draw(){
-        g.fillStyle = 'rgba(12,10,16,.9)';
-        g.fillRect(0,0,cv.width,cv.height);
-        // grid
+        g.fillStyle = 'rgba(12,10,16,.9)'; g.fillRect(0,0,cv.width,cv.height);
         g.strokeStyle='rgba(167,139,250,.1)';
         for(let i=0;i<=H;i++){ g.beginPath(); g.moveTo(0,i*S); g.lineTo(W*S,i*S); g.stroke();}
         for(let j=0;j<=W;j++){ g.beginPath(); g.moveTo(j*S,0); g.lineTo(j*S,H*S); g.stroke();}
-
-        // board
         for(let i=0;i<H;i++) for(let j=0;j<W;j++) if(board[i][j]) drawCell(i,j,board[i][j]);
-        // piece
         if(cur) for(let i=0;i<cur.length;i++) for(let j=0;j<cur[i].length;j++) if(cur[i][j]) drawCell(y+i,x+j,cur[i][j]);
-
         hud.textContent = `Score: ${score}`;
       }
       function step(){
@@ -298,26 +275,19 @@
         tick++;
         if(tick % speed === 0){
           if(!collide(x,y+1,cur)){ y++; }
-          else{
-            merge(); clearLines(); newPiece();
-          }
+          else{ merge(); clearLines(); newPiece(); }
           draw();
         }
         loopId = requestAnimationFrame(step);
       }
-      function hardDrop(){
-        while(!collide(x,y+1,cur)) y++;
-        merge(); clearLines(); newPiece(); draw();
-      }
+      function hardDrop(){ while(!collide(x,y+1,cur)) y++; merge(); clearLines(); newPiece(); draw(); }
       function key(e){
         if(!running) return;
         if(e.key==='ArrowLeft' && !collide(x-1,y,cur)) x--;
         else if(e.key==='ArrowRight'&& !collide(x+1,y,cur)) x++;
         else if(e.key==='ArrowDown' && !collide(x,y+1,cur)) y++;
-        else if(e.key==='ArrowUp'){
-          const r = rotate(cur);
-          if(!collide(x,y,r)) cur = r;
-        } else if(e.code==='Space'){ hardDrop(); }
+        else if(e.key==='ArrowUp'){ const r = rotate(cur); if(!collide(x,y,r)) cur = r; }
+        else if(e.code==='Space'){ hardDrop(); }
         draw();
       }
 
@@ -326,7 +296,6 @@
       function destroy(){ window.removeEventListener('keydown', key); cancelAnimationFrame(loopId); }
       window.addEventListener('keydown', key);
 
-      // scale canvas to fit container height nicely
       function fit(){
         const maxH = Math.max(300, Math.min(container.clientHeight-12, 500));
         const scale = Math.min(1.6, Math.max(1, maxH / cv.height));
@@ -348,87 +317,51 @@
 
       let running=false, loopId=null;
       let birdY=H/2, vel=0, gravity=0.45, flap=-7;
-      let pipes=[], t=0, score=0, passed=0;
+      let pipes=[], t=0, score=0;
 
       const helpText = 'Tap / Click / Space to flap. Avoid purple pipes.';
 
-      function reset(){
-        running=false; cancelAnimationFrame(loopId);
-        birdY=H/2; vel=0; pipes=[]; t=0; score=0; passed=0; overlay.classList.remove('show');
-        draw();
-      }
+      function reset(){ running=false; cancelAnimationFrame(loopId); birdY=H/2; vel=0; pipes=[]; t=0; score=0; overlay.classList.remove('show'); draw(); }
       function start(){ running=true; step(); }
 
-      function addPipe(){
-        const gap = 110;
-        const top = randInt(40, H-40-gap);
-        pipes.push({x:W+20, top:top, gap:gap, w:54});
-      }
+      function addPipe(){ const gap=110; const top=randInt(40, H-40-gap); pipes.push({x:W+20, top, gap, w:54}); }
       function collide(){
-        // bird box
         const bx=80, by=birdY, br=14;
-        // walls
         if(by-br<0 || by+br>H) return true;
         for(const p of pipes){
           if(bx+br > p.x && bx-br < p.x + p.w){
             if(by-br < p.top || by+br > p.top + p.gap) return true;
           }
-          // score when passed
           if(!p.scored && p.x + p.w < bx-br){ p.scored=true; score++; }
         }
         return false;
       }
-      function drawBg(){
-        g.fillStyle='rgba(12,10,16,.95)'; g.fillRect(0,0,W,H);
-        // stars
-        g.fillStyle='rgba(167,139,250,.15)';
-        for(let i=0;i<40;i++){ g.fillRect((i*17 + t*0.3)%W, (i*29)%H, 2,2); }
-      }
+      function drawBg(){ g.fillStyle='rgba(12,10,16,.95)'; g.fillRect(0,0,W,H); g.fillStyle='rgba(167,139,250,.15)'; for(let i=0;i<40;i++){ g.fillRect((i*17 + t*0.3)%W, (i*29)%H, 2,2); } }
       function draw(){
         drawBg();
-        // pipes
-        for(const p of pipes){
-          g.fillStyle='#6d28d9';
-          g.fillRect(p.x, 0, p.w, p.top);
-          g.fillRect(p.x, p.top + p.gap, p.w, H - (p.top+p.gap));
-          g.fillStyle='#a78bfa'; g.fillRect(p.x, p.top-6, p.w, 6); g.fillRect(p.x, p.top+p.gap, p.w, 6);
-        }
-        // bird
+        for(const p of pipes){ g.fillStyle='#6d28d9'; g.fillRect(p.x,0,p.w,p.top); g.fillRect(p.x,p.top+p.gap,p.w,H-(p.top+p.gap)); g.fillStyle='#a78bfa'; g.fillRect(p.x,p.top-6,p.w,6); g.fillRect(p.x,p.top+p.gap,p.w,6); }
         g.beginPath(); g.arc(80, birdY, 14, 0, Math.PI*2); g.fillStyle='#c4b5fd'; g.fill();
         g.beginPath(); g.arc(92, birdY-4, 4, 0, Math.PI*2); g.fillStyle='#fff'; g.fill();
         g.beginPath(); g.arc(92, birdY-4, 2, 0, Math.PI*2); g.fillStyle='#000'; g.fill();
-
         hud.textContent = `Score: ${score}`;
       }
       function step(){
         if(!running){ draw(); return; }
-        t++;
-        if(t%90===0) addPipe();
-        pipes.forEach(p=>p.x-=2.2);
-        pipes = pipes.filter(p=>p.x>-80);
+        t++; if(t%90===0) addPipe();
+        pipes.forEach(p=>p.x-=2.2); pipes = pipes.filter(p=>p.x>-80);
         vel += gravity; birdY += vel;
-
         if(collide()){ running=false; showLose(); }
-        draw();
-        loopId = requestAnimationFrame(step);
+        draw(); loopId = requestAnimationFrame(step);
       }
       function flapBird(){ if(!running) return; vel = flap; }
-      function key(e){
-        if(e.code==='Space'){ e.preventDefault(); flapBird(); }
-        if(e.key==='ArrowUp'){ flapBird(); }
-      }
+      function key(e){ if(e.code==='Space'||e.key==='ArrowUp'){ e.preventDefault(); flapBird(); } }
       function click(){ flapBird(); }
 
       window.addEventListener('keydown', key);
       cv.addEventListener('pointerdown', click);
-
       function destroy(){ window.removeEventListener('keydown', key); cv.removeEventListener('pointerdown', click); cancelAnimationFrame(loopId); }
 
-      // scale to container
-      function fit(){
-        const scale = Math.min(1.2, Math.max(0.9, (container.clientHeight-20)/H));
-        cv.style.transform = `scale(${scale})`;
-      }
+      function fit(){ const scale = Math.min(1.2, Math.max(0.9, (container.clientHeight-20)/H)); cv.style.transform = `scale(${scale})`; }
       new ResizeObserver(fit).observe(container); fit();
 
       draw();
@@ -442,8 +375,7 @@
 
       const size = 9, mines = 10, cell = 32;
       const cv = document.createElement('canvas');
-      cv.width = size*cell; cv.height = size*cell;
-      container.appendChild(cv);
+      cv.width = size*cell; cv.height = size*cell; container.appendChild(cv);
       const g = cv.getContext('2d');
 
       let board, revealed, flagged, firstClick, running=true;
@@ -463,7 +395,6 @@
           if(board[y][x]===-1 || (Math.abs(x-sx)<=1 && Math.abs(y-sy)<=1)) continue;
           board[y][x] = -1; left--;
         }
-        // counts
         for(let y=0;y<size;y++) for(let x=0;x<size;x++){
           if(board[y][x]===-1) continue;
           let c=0;
@@ -489,47 +420,32 @@
         if(checkWin()){ running=false; hud.textContent='You cleared it! 🎉'; }
         draw();
       }
-      function revealAllMines(){
-        for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(board[y][x]===-1) revealed[y][x]=true;
-      }
+      function revealAllMines(){ for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(board[y][x]===-1) revealed[y][x]=true; }
       function checkWin(){
-        let hidden=0;
-        for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(!revealed[y][x] && board[y][x]!==-1) hidden++;
-        if(hidden===0) return true; return false;
+        let hidden=0; for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(!revealed[y][x] && board[y][x]!==-1) hidden++;
+        return hidden===0;
       }
-      function toggleFlag(x,y){
-        if(!running || revealed[y][x]) return;
-        flagged[y][x]=!flagged[y][x];
-        draw();
-      }
+      function toggleFlag(x,y){ if(!running || revealed[y][x]) return; flagged[y][x]=!flagged[y][x]; draw(); }
       function draw(){
         g.fillStyle='rgba(12,10,16,.96)'; g.fillRect(0,0,cv.width,cv.height);
         for(let y=0;y<size;y++) for(let x=0;x<size;x++){
           const px=x*cell, py=y*cell;
-          // tile bg
           g.fillStyle = revealed[y][x] ? 'rgba(31,24,45,.95)' : 'rgba(20,16,28,.95)';
           g.fillRect(px,py,cell-1,cell-1);
-          g.strokeStyle='rgba(167,139,250,.18)';
-          g.strokeRect(px+.5,py+.5,cell-2,cell-2);
-
+          g.strokeStyle='rgba(167,139,250,.18)'; g.strokeRect(px+.5,py+.5,cell-2,cell-2);
           if(revealed[y][x]){
             const v = board[y][x];
             if(v===-1){
-              // mine
-              g.fillStyle='#8b5cf6';
-              g.beginPath(); g.arc(px+cell/2, py+cell/2, 8, 0, Math.PI*2); g.fill();
+              g.fillStyle='#8b5cf6'; g.beginPath(); g.arc(px+cell/2, py+cell/2, 8, 0, Math.PI*2); g.fill();
               g.fillStyle='#c4b5fd'; g.fillRect(px+cell/2-1,py+5,2,cell-10); g.fillRect(px+5,py+cell/2-1,cell-10,2);
             } else if(v>0){
-              g.fillStyle='#c4b5fd'; g.font='600 16px system-ui'; g.textAlign='center'; g.textBaseline='middle';
-              g.fillText(v, px+cell/2, py+cell/2+1);
+              g.fillStyle='#c4b5fd'; g.font='600 16px system-ui'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(v, px+cell/2, py+cell/2+1);
             }
           } else if(flagged[y][x]){
-            // flag
             g.fillStyle='#a78bfa'; g.beginPath(); g.moveTo(px+10,py+20); g.lineTo(px+10,py+8); g.lineTo(px+22,py+12); g.closePath(); g.fill();
             g.fillRect(px+10,py+8,2,16);
           }
         }
-        // hud
         let flags=0; for(let y=0;y<size;y++) for(let x=0;x<size;x++) if(flagged[y][x]) flags++;
         hud.textContent = `Mines: ${mines} | Flags: ${flags}`;
       }
@@ -544,16 +460,11 @@
       cv.addEventListener('mousedown', click);
       cv.addEventListener('contextmenu', context);
 
-      function start(){ running=true; }
+      function start(){ /* not needed */ }
       function reset(){ init(); }
       function destroy(){ cv.removeEventListener('mousedown', click); cv.removeEventListener('contextmenu', context); }
 
-      // scale to container
-      function fit(){
-        const target = Math.min(container.clientWidth-20, container.clientHeight-20, 340);
-        const scale = Math.max(0.9, target/(size*cell));
-        cv.style.transform = `scale(${scale})`;
-      }
+      function fit(){ const target = Math.min(container.clientWidth-20, container.clientHeight-20, 340); const scale = Math.max(0.9, target/(size*cell)); cv.style.transform = `scale(${scale})`; }
       new ResizeObserver(fit).observe(container); fit();
 
       init(); draw();

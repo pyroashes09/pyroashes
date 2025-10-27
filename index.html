@@ -1,374 +1,482 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>pyroashes.lol — Flappy Bird & Links</title>
-  <meta name="color-scheme" content="dark">
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0a0a0f; --panel:#11111a; --panel-2:#0f0f18;
-      --ink:#e8e8ff; --muted:#a6a6c9;
-      --accent:#7c3aed; --accent-2:#a78bfa; --accent-3:#4c1d95;
-      --ring: 0 0 0 2px rgba(124,58,237,.45), 0 0 30px rgba(124,58,237,.25);
-      --radius: 18px; --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
-      --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom);
-    }
-    *{box-sizing:border-box; -webkit-tap-highlight-color: transparent}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color:var(--ink);
-      background:
-        radial-gradient(1200px 800px at 80% -10%, rgba(124,58,237,.12), transparent 60%),
-        radial-gradient(1000px 600px at -10% 110%, rgba(168,85,247,.10), transparent 60%),
-        linear-gradient(180deg, #0b0b13, #06060a 40%, #05050a);
-      background-color:var(--bg);
-    }
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>pyroashes.lol</title>
+    <meta name="description" content="pyroashes.lol • links and a built‑in Flappy game" />
+    <meta name="theme-color" content="#8b5cf6" />
+    <style>
+      :root {
+        --bg: #0b0b0f;          /* near-black */
+        --bg-elev: #111118;     /* elevated surfaces */
+        --fg: #e7e7ff;          /* primary text */
+        --muted: #b6b6d1;       /* secondary text */
+        --accent: #8b5cf6;      /* purple */
+        --accent-2: #c084fc;    /* lighter purple */
+        --danger: #ef4444;      /* red for gameover */
+        --ok: #10b981;          /* green for success */
+        --card: linear-gradient(180deg, rgba(139,92,246,0.08), rgba(139,92,246,0.03));
+        --ring: rgba(139,92,246,0.35);
+        --shadow: 0 10px 30px rgba(0,0,0,.45), 0 2px 10px rgba(139,92,246,.18);
+      }
 
-    /* Topbar */
-    .topbar{
-      position:sticky; top:0; z-index:100;
-      display:flex; align-items:center; gap:.75rem;
-      padding: calc(.85rem + var(--safe-top)) 1rem .85rem;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(180deg, rgba(15,15,25,.75), rgba(15,15,25,.45));
-      border-bottom: 1px solid rgba(255,255,255,.06);
-    }
-    .brand{display:flex; align-items:center; gap:.65rem; text-decoration:none; color:var(--ink)}
-    .brand .logo{width:36px; height:36px; border-radius:12px; background: radial-gradient(circle at 30% 30%, var(--accent-2), var(--accent)); box-shadow:var(--shadow)}
-    .brand h1{font-size:1.05rem; font-weight:800; letter-spacing:.02em; margin:0}
-    .chip{display:inline-flex; align-items:center; gap:.5rem; font-size:.78rem; color: var(--accent-2); padding:.35rem .6rem; border:1px solid rgba(124,58,237,.4); border-radius:999px; background: rgba(124,58,237,.08)}
-    .spacer{flex:1}
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        color: var(--fg);
+        background: radial-gradient(1200px 600px at 80% -200px, rgba(139,92,246,.22), transparent 60%),
+                    radial-gradient(1000px 500px at -100px -120px, rgba(192,132,252,.18), transparent 60%),
+                    var(--bg);
+        line-height: 1.5;
+      }
 
-    /* Hamburger */
-    .hamburger{width:44px; height:44px; border:none; border-radius:12px; cursor:pointer; background:linear-gradient(180deg, var(--panel), var(--panel-2)); color:var(--ink); display:grid; place-items:center; box-shadow:var(--shadow); transition: transform .2s ease, box-shadow .2s ease}
-    .hamburger:active{ transform: scale(.98) }
-    .hamburger:focus-visible{ outline:none; box-shadow: var(--ring) }
-    .hamburger .bars, .hamburger .bars::before, .hamburger .bars::after{content:""; display:block; width:20px; height:2px; background:var(--ink); border-radius:2px; position:relative; transition: transform .25s ease, opacity .25s ease}
-    .hamburger .bars::before{ position:absolute; top:-6px }
-    .hamburger .bars::after{ position:absolute; top:6px }
-    .hamburger[aria-pressed="true"] .bars{ transform: rotate(45deg) }
-    .hamburger[aria-pressed="true"] .bars::before{ transform: rotate(90deg) translateX(-6px) }
-    .hamburger[aria-pressed="true"] .bars::after{ opacity:0 }
+      a { color: inherit; text-decoration: none; }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 24px;
+      }
 
-    /* Tabs */
-    .tabs{max-width:1100px; margin: 1.25rem auto; padding: 0 1rem}
-    .tab-buttons{display:flex; gap:.5rem; margin-bottom: .75rem; align-items:center}
-    .tab-btn{appearance:none; border:none; cursor:pointer; padding:.65rem .9rem; border-radius:12px; background:linear-gradient(180deg, var(--panel), var(--panel-2)); color:var(--muted); font-weight:600; letter-spacing:.02em; box-shadow: var(--shadow); transition: color .2s ease, transform .2s ease, box-shadow .2s ease, background .2s ease}
-    .tab-btn.active{color:var(--ink); background: linear-gradient(180deg, rgba(124,58,237,.25), rgba(124,58,237,.18)); box-shadow: var(--ring)}
-    .tab-btn:focus-visible{ outline:none; box-shadow: var(--ring) }
-    .panel{display:none; background: linear-gradient(180deg, rgba(18,18,37,.9), rgba(14,14,26,.85)); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); animation: fade .25s ease}
-    .panel.active{ display:block }
-    @keyframes fade{ from{ opacity:0; transform: translateY(6px) } to{ opacity:1; transform: translateY(0) } }
+      header.site {
+        display: flex; align-items: center; justify-content: space-between;
+        gap: 16px; padding: 12px 0 24px;
+      }
 
-    /* Grid */
-    .grid{display:grid; grid-template-columns: repeat(12, 1fr); gap: 1rem}
-    .col-12{grid-column: span 12}
+      .brand {
+        display: flex; align-items: center; gap: 12px;
+      }
+      .brand-logo {
+        width: 42px; height: 42px; border-radius: 12px;
+        display: grid; place-items: center;
+        background: conic-gradient(from 210deg, rgba(139,92,246,.3), rgba(139,92,246,.6), rgba(192,132,252,.35));
+        box-shadow: inset 0 0 18px rgba(139,92,246,.6), 0 8px 24px rgba(139,92,246,.25);
+      }
+      .brand-logo svg { filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+      .brand h1 { font-size: 1.25rem; margin: 0; letter-spacing: .4px; }
+      .tag { color: var(--muted); font-size: .95rem; }
 
-    .card{background: linear-gradient(180deg, rgba(18,18,40,.9), rgba(14,14,28,.9)); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); position:relative; overflow:hidden}
-    .card::after{content:""; position:absolute; inset:0; background: radial-gradient(400px 120px at 20% -10%, rgba(124,58,237,.12), transparent 60%), radial-gradient(400px 120px at 120% 110%, rgba(168,85,247,.08), transparent 60%); pointer-events:none; mix-blend: screen}
-    .card h3{ margin:.25rem 0 .5rem; font-size:1rem; letter-spacing:.02em }
-    .muted{ color:var(--muted); font-size:.9rem }
+      nav a {
+        padding: 10px 14px; border-radius: 12px; color: var(--fg);
+        background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.22);
+        transition: transform .15s ease, background .2s ease, border-color .2s ease;
+      }
+      nav a:hover { transform: translateY(-1px); background: rgba(139,92,246,.18); border-color: rgba(139,92,246,.35); }
 
-    .link-row{display:flex; align-items:center; gap:.75rem; text-decoration:none; color:var(--ink); background: linear-gradient(180deg, rgba(124,58,237,.12), rgba(124,58,237,.08)); border: 1px solid rgba(124,58,237,.35); padding:1rem 1.1rem; border-radius:14px; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .2s ease, background .2s ease}
-    .link-row:hover{ transform: translateY(-2px); box-shadow: var(--ring) }
-    .link-icon{width:28px; height:28px; border-radius:9px; display:grid; place-items:center; background: radial-gradient(circle at 30% 30%, var(--accent-2), var(--accent)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.15); font-weight: 900}
+      main.grid {
+        display: grid; gap: 24px; align-items: start;
+        grid-template-columns: 1.3fr 1fr; /* game larger than links on desktop */
+      }
+      @media (max-width: 980px) {
+        main.grid { grid-template-columns: 1fr; }
+      }
 
-    /* Game wrapper + mobile sizing */
-    .game-wrap{ background: radial-gradient(800px 300px at 50% -10%, rgba(124,58,237,.18), transparent 60%), #0b0b17; border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:.5rem; box-shadow: var(--shadow) }
-    canvas.resp-canvas{ width:100%; height:480px; display:block; background:#0e0e18; border-radius:10px }
-    @media (max-width: 640px){ canvas.resp-canvas{ height: min(64vh, 520px) } }
+      .card {
+        background: var(--card);
+        border: 1px solid rgba(139,92,246,.18);
+        border-radius: 18px; padding: 18px; box-shadow: var(--shadow);
+        backdrop-filter: blur(4px);
+      }
+      .card h2 { margin: 0 0 12px; font-size: 1.15rem; font-weight: 700; }
+      .sub { color: var(--muted); font-size: .95rem; }
 
-    .controls{display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.6rem}
-    .controls .btn{ flex:1; min-width: 120px; padding:.9rem 1rem }
+      /* ===== Links ===== */
+      .links {
+        display: grid; gap: 12px;
+      }
+      .link-item {
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        padding: 14px; border-radius: 14px; background: rgba(255,255,255,.02);
+        border: 1px solid rgba(139,92,246,.18);
+        transition: background .2s ease, border-color .2s ease, transform .15s ease;
+      }
+      .link-item:hover { background: rgba(255,255,255,.04); border-color: rgba(139,92,246,.35); transform: translateY(-1px); }
+      .link-left { display: flex; align-items: center; gap: 12px; }
+      .link-left svg { width: 22px; height: 22px; opacity: .9; }
+      .link-title { font-weight: 600; }
+      .link-desc { color: var(--muted); font-size: .9rem; }
+      .btn {
+        padding: 10px 14px; border-radius: 12px; font-weight: 600; border: 1px solid rgba(139,92,246,.35);
+        background: linear-gradient(180deg, rgba(139,92,246,.25), rgba(139,92,246,.15));
+      }
 
-    .btn{appearance:none; border:none; cursor:pointer; border-radius:12px; padding:.7rem 1rem; font-weight:700; letter-spacing:.02em; background: linear-gradient(180deg, var(--accent), var(--accent-3)); color:white; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .2s ease, filter .2s ease}
-    .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); box-shadow: var(--ring) }
-    .btn:focus-visible{ outline:none; box-shadow: var(--ring) }
+      /* ===== Flappy Game ===== */
+      .game-wrap { position: relative; }
+      canvas#gameCanvas {
+        width: 100%; /* responsive scale */
+        height: auto; aspect-ratio: 9/16; /* keep portrait aspect */
+        display: block; border-radius: 14px; background: linear-gradient(180deg, #151521, #0b0b0f);
+        border: 1px solid rgba(139,92,246,.25);
+      }
+      .hud { display: flex; align-items: center; justify-content: space-between; margin: 8px 2px 0; }
+      .score { font-weight: 800; letter-spacing: .5px; }
+      .controls { display: flex; gap: 8px; }
+      .controls button { cursor: pointer; }
+      .pill { padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(139,92,246,.35); background: rgba(139,92,246,.16); font-weight: 700; }
+      .hint { color: var(--muted); font-size: .9rem; margin-top: 6px; }
 
-    .footer{ opacity:.7; font-size:.8rem; text-align:center; padding:1.2rem 1rem calc(1.2rem + var(--safe-bottom)) }
-    a{ color:var(--accent-2) }
-    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
+      .overlay {
+        position: absolute; inset: 0; display: grid; place-items: center;
+        pointer-events: none; /* enabled only when visible via class */
+      }
+      .overlay > .panel {
+        pointer-events: auto;
+        background: rgba(10,10,14,.8); border: 1px solid rgba(139,92,246,.35); border-radius: 16px; padding: 18px 20px; text-align: center; box-shadow: var(--shadow);
+      }
+      .overlay h3 { margin: 0 0 6px; }
+      .overlay .small { color: var(--muted); font-size: .95rem; }
+      .overlay .cta { margin-top: 12px; }
 
-    @media (prefers-reduced-motion: reduce){
-      *{ animation: none !important; transition: none !important; scroll-behavior: auto !important }
-    }
-  </style>
-</head>
-<body>
-  <header class="topbar" role="banner">
-    <a class="brand" href="#" aria-label="Home">
-      <span class="logo" aria-hidden="true"></span>
-      <h1>pyroashes.lol</h1>
-      <span class="chip">Dark · Purple</span>
-    </a>
-    <div class="spacer"></div>
-    <button id="hamburger" class="hamburger" aria-label="Toggle section" aria-controls="panels" aria-pressed="false" title="Switch between Games and Links">
-      <span class="bars" aria-hidden="true"></span>
-    </button>
-  </header>
+      .hidden { display: none !important; }
 
-  <main class="tabs" id="panels">
-    <div class="tab-buttons" aria-hidden="true">
-      <button class="tab-btn active" data-tab="games">Games</button>
-      <button class="tab-btn" data-tab="links">Links</button>
+      footer { margin: 24px 0 12px; text-align: center; color: var(--muted); font-size: .9rem; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header class="site">
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M12 2l2.2 5.7 6.1.5-4.7 3.8 1.5 5.9L12 15.8 6.9 17.9l1.5-5.9L3.7 8.2l6.1-.5L12 2z" stroke="white" stroke-opacity=".9" stroke-width="1.2" />
+            </svg>
+          </div>
+          <div>
+            <h1>pyroashes.lol</h1>
+            <div class="tag">Modern dark hub • links + game</div>
+          </div>
+        </div>
+        <nav>
+          <a href="#game">Game</a>
+          <a href="#links">Links</a>
+        </nav>
+      </header>
+
+      <main class="grid">
+        <!-- ===== Flappy Section ===== -->
+        <section id="game" class="card">
+          <h2>Flappy</h2>
+          <div class="sub">Tap / click / press <kbd>Space</kbd> or <kbd>↑</kbd> to flap. Pass pipes, rack up points.</div>
+
+          <div class="game-wrap">
+            <canvas id="gameCanvas" width="360" height="640" aria-label="Flappy game area"></canvas>
+
+            <div id="overlay-ready" class="overlay">
+              <div class="panel">
+                <h3>Ready?</h3>
+                <div class="small">Tap, click, Space or ↑ to start</div>
+                <div class="cta"><button id="startBtn" class="btn">Start Game</button></div>
+              </div>
+            </div>
+
+            <div id="overlay-gameover" class="overlay hidden">
+              <div class="panel">
+                <h3>Game Over</h3>
+                <div class="small" id="finalScore">Score: 0</div>
+                <div class="cta"><button id="restartBtn" class="btn">Play Again</button></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hud">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="controls">
+              <button id="pauseBtn" class="pill" aria-pressed="false">Pause</button>
+              <button id="muteBtn" class="pill" aria-pressed="false">Mute</button>
+            </div>
+          </div>
+          <div class="hint">Pro tip: smaller gaps as you score higher. Good luck!</div>
+        </section>
+
+        <!-- ===== Links Section ===== -->
+        <section id="links" class="card">
+          <h2>My Links</h2>
+          <div class="sub">All the places you can find me.</div>
+
+          <div class="links">
+            <a id="discordLink" class="link-item" target="_blank" rel="noopener noreferrer">
+              <div class="link-left">
+                <!-- Discord Icon -->
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M20.317 4.37A18.134 18.134 0 0016.558 3c-.2.35-.43.82-.59 1.19a16.263 16.263 0 00-3.936 0c-.16-.37-.39-.84-.591-1.19-1.398.254-2.73.7-3.759 1.37C4.156 7.082 3.2 9.95 3.5 12.77c1.55 1.156 3.05 1.86 4.508 2.32.35-.48.66-1 .92-1.55-.507-.192-.99-.43-1.45-.7.12-.09.237-.183.35-.28 2.8 1.31 5.84 1.31 8.62 0 .115.097.231.19.351.28-.46.27-.944.507-1.45.7.26.55.57 1.07.92 1.55 1.457-.46 2.958-1.164 4.508-2.32.37-3.485-.63-6.318-2.86-8.4zM9.68 12.1c-.68 0-1.24-.63-1.24-1.4 0-.77.55-1.4 1.24-1.4.69 0 1.25.63 1.24 1.4 0 .77-.55 1.4-1.24 1.4zm4.64 0c-.69 0-1.25-.63-1.25-1.4 0-.77.56-1.4 1.25-1.4s1.24.63 1.24 1.4c0 .77-.55 1.4-1.24 1.4z"/></svg>
+                <div>
+                  <div class="link-title">Discord</div>
+                  <div class="link-desc">Join the server / DM me</div>
+                </div>
+              </div>
+              <span class="btn">Open</span>
+            </a>
+
+            <a id="githubLink" class="link-item" target="_blank" rel="noopener noreferrer">
+              <div class="link-left">
+                <!-- GitHub Icon -->
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 .5a11.5 11.5 0 00-3.64 22.41c.58.11.79-.25.79-.56v-2c-3.22.71-3.9-1.38-3.9-1.38-.53-1.34-1.31-1.7-1.31-1.7-1.07-.73.08-.72.08-.72 1.18.08 1.8 1.22 1.8 1.22 1.05 1.81 2.74 1.29 3.41.99.11-.79.41-1.29.75-1.59-2.57-.29-5.27-1.29-5.27-5.76 0-1.27.46-2.31 1.21-3.12-.12-.3-.52-1.53.12-3.19 0 0 .98-.32 3.21 1.19a11.1 11.1 0 015.84 0C16.34 6 17.32 6.32 17.32 6.32c.64 1.66.24 2.89.12 3.19.75.81 1.21 1.85 1.21 3.12 0 4.49-2.7 5.47-5.28 5.76.42.36.8 1.08.8 2.17v3.22c0 .31.21.67.8.56A11.5 11.5 0 0012 .5z"/></svg>
+                <div>
+                  <div class="link-title">GitHub</div>
+                  <div class="link-desc">My repos & projects</div>
+                </div>
+              </div>
+              <span class="btn">Open</span>
+            </a>
+
+            <a id="steamLink" class="link-item" target="_blank" rel="noopener noreferrer">
+              <div class="link-left">
+                <!-- Steam Icon -->
+                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M21.996 12.004A9.996 9.996 0 1110.19 2.122l-.005.003.002.001.002.001a9.997 9.997 0 0011.81 9.877l-.003-.002.003.002-.004 0zM6.27 14.8l2.21.93a2.7 2.7 0 002.67-4.7l-2.17-.92a3.53 3.53 0 11-2.71 4.68zm11.43-9.11a3.59 3.59 0 100 7.18 3.59 3.59 0 000-7.18zm0 1.8a1.79 1.79 0 110 3.58 1.79 1.79 0 010-3.58z"/></svg>
+                <div>
+                  <div class="link-title">Steam</div>
+                  <div class="link-desc">Profile & games</div>
+                </div>
+              </div>
+              <span class="btn">Open</span>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        © <span id="year"></span> pyroashes.lol • All rights reserved.
+      </footer>
     </div>
 
-    <!-- GAMES -->
-    <section id="panel-games" class="panel active" role="region" aria-label="Games">
-      <div class="grid">
-        <div class="card col-12">
-          <h3>Flappy Bird <span class="muted">· tap / click / space to flap</span></h3>
-          <div class="game-wrap">
-            <canvas id="flappy" class="resp-canvas" width="720" height="480" aria-label="Flappy Bird"></canvas>
-          </div>
-          <div class="controls">
-            <button class="btn" id="flappy-start">Start / Restart</button>
-            <button class="btn" id="flappy-pause">Pause</button>
-            <span class="chip">Score: <strong id="score">0</strong> · Best: <strong id="best">0</strong></span>
-          </div>
-          <p class="muted" style="margin:.6rem 0 0">Tip: press <kbd>H</kbd> to toggle between Games and Links.</p>
-        </div>
-      </div>
-    </section>
+    <script>
+      // ==========================
+      // 🔗 PASTE YOUR LINKS HERE
+      // ==========================
+      // Replace the values with your actual URLs. You only need to edit this block.
+      // Example: discord: 'https://discord.gg/abc123'
+      const LINKS = {
+        discord: 'PASTE_DISCORD_URL_HERE',
+        github: 'PASTE_GITHUB_URL_HERE',
+        steam: 'PASTE_STEAM_URL_HERE'
+      };
 
-    <!-- LINKS -->
-    <section id="panel-links" class="panel" role="region" aria-label="Links">
-      <div class="grid">
-        <div class="card col-12">
-          <h3>Your Profiles</h3>
+      (function initLinks(){
+        const map = [
+          ['discordLink', LINKS.discord],
+          ['githubLink', LINKS.github],
+          ['steamLink', LINKS.steam],
+        ];
+        map.forEach(([id, href]) => { const el = document.getElementById(id); if (el && href && !href.startsWith('PASTE_')) el.href = href; });
+      })();
 
-          <!-- Discord -->
-          <a class="link-row" href="https://discord.com/users/1201937202808885320" target="_blank" rel="noopener">
-            <span class="link-icon" aria-hidden="true">D</span>
-            <div>
-              <div style="font-weight:700">Discord</div>
-              <div class="muted">@pyroashes — user ID 1201937202808885320</div>
-            </div>
-          </a>
+      document.getElementById('year').textContent = new Date().getFullYear();
 
-          <div style="height:.6rem"></div>
+      // ==========================
+      // 🕹️ FLAPPY (vanilla JS)
+      // ==========================
+      (function(){
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
 
-          <!-- GitHub -->
-          <a class="link-row" href="https://github.com/pyroashes09" target="_blank" rel="noopener">
-            <span class="link-icon" aria-hidden="true">G</span>
-            <div>
-              <div style="font-weight:700">GitHub</div>
-              <div class="muted">github.com/pyroashes09</div>
-            </div>
-          </a>
-
-          <div style="height:.6rem"></div>
-
-          <!-- Steam -->
-          <a class="link-row" href="https://steamcommunity.com/profiles/76561199470936572/" target="_blank" rel="noopener">
-            <span class="link-icon" aria-hidden="true">S</span>
-            <div>
-              <div style="font-weight:700">Steam</div>
-              <div class="muted">steamcommunity.com/profiles/76561199470936572</div>
-            </div>
-          </a>
-
-          <p class="muted" style="margin-top:.9rem">Links open in a new tab.</p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <span class="muted">© <span id="year"></span> · pyroashes.lol</span>
-  </footer>
-
-  <script>
-  /* ===== Global UI: tabs / hamburger ===== */
-  const btns = Array.from(document.querySelectorAll('.tab-btn'));
-  const hamburger = document.getElementById('hamburger');
-  const panelGames = document.getElementById('panel-games');
-  const panelLinks = document.getElementById('panel-links');
-
-  function setActive(tab){
-    const isGames = tab === 'games';
-    panelGames.classList.toggle('active', isGames);
-    panelLinks.classList.toggle('active', !isGames);
-    btns.forEach(b=> b.classList.toggle('active', b.dataset.tab === tab));
-    hamburger.setAttribute('aria-pressed', (!isGames).toString());
-
-    // Pause Flappy when leaving, resume when returning
-    if (window.flappy){
-      if (isGames){ window.flappy.resume(); }
-      else { window.flappy.pause(); }
-    }
-
-    // Smooth scroll to top on mobile
-    if (matchMedia('(max-width: 640px)').matches) window.scrollTo({top:0, behavior:'smooth'});
-  }
-  setActive('games');
-  btns.forEach(b => b.addEventListener('click', () => setActive(b.dataset.tab)));
-  hamburger.addEventListener('click', () => {
-    const showingGames = panelGames.classList.contains('active');
-    setActive(showingGames ? 'links' : 'games');
-  });
-  addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'h'){ hamburger.click(); } });
-  document.getElementById('year').textContent = new Date().getFullYear();
-
-  /* ===== Utility: lock touch scrolling on canvas ===== */
-  function lockTouch(el){
-    el.addEventListener('touchmove', e => { e.preventDefault(); }, {passive:false});
-  }
-
-  /* ===== Flappy Bird (mobile/desktop + tab-safe) ===== */
-  ;(function(){
-    const c = document.getElementById('flappy');
-    const ctx = c.getContext('2d', { alpha: false });
-    const scoreEl = document.getElementById('score');
-    const bestEl = document.getElementById('best');
-    lockTouch(c);
-
-    let W = c.width, H = c.height;
-
-    function resizeCanvas(){
-      const rect = c.getBoundingClientRect();
-      // Skip resize when hidden (display:none -> 0 size). Prevents "reset" when switching tabs.
-      if (rect.width === 0 || rect.height === 0) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      c.width = Math.floor(rect.width * dpr);
-      c.height = Math.floor(rect.height * dpr);
-      W = rect.width; H = rect.height;
-      ctx.setTransform(dpr,0,0,dpr,0,0);
-    }
-    const ro = new ResizeObserver(resizeCanvas); ro.observe(c);
-    resizeCanvas();
-
-    let running=false, gameOver=false, score=0, best=+localStorage.getItem('flappy_best_v2')||0;
-    let paused=false; // controlled by UI and tab switch
-    bestEl.textContent = best;
-
-    const bird = { x: 160, y: 160, r: 12, vy: 0 };
-    const G = 0.45, FLAP = -8.5, MAX_FALL=12;
-
-    const pipes = []; const GAP=140; const PIPE_W=64; let spawn=0;
-
-    function reset(){
-      running=false; gameOver=false; score=0;
-      bird.x = Math.max(140, W*0.25); bird.y = H*0.45; bird.vy = 0;
-      pipes.length=0; spawn=0; scoreEl.textContent=score;
-    }
-    function spawnPipe(){
-      const margin = 50;
-      const topH = Math.random()*(H - GAP - margin*2) + margin;
-      pipes.push({ x: W + PIPE_W, top: topH, bottom: topH + GAP, passed:false });
-    }
-    function flap(){
-      if (!running && !gameOver) running = true;
-      if (gameOver){ reset(); running=true; }
-      bird.vy = FLAP;
-    }
-
-    c.addEventListener('mousedown', flap);
-    c.addEventListener('touchstart', (e)=>{ e.preventDefault(); flap(); }, {passive:false});
-    document.getElementById('flappy-start').addEventListener('click', ()=>{ reset(); running=true; paused=false; });
-    document.getElementById('flappy-pause').addEventListener('click', ()=> { paused = !paused; });
-
-    addEventListener('keydown', (e)=>{ if(e.key===' '){ e.preventDefault(); flap(); } });
-
-    function rr(ctx,x,y,w,h,r,fill=true,stroke=false){
-      if (w<2*r) r=w/2; if(h<2*r) r=h/2;
-      ctx.beginPath();
-      ctx.moveTo(x+r,y);
-      ctx.arcTo(x+w,y,x+w,y+h,r);
-      ctx.arcTo(x+w,y+h,x,y+h,r);
-      ctx.arcTo(x,y+h,x,y,r);
-      ctx.arcTo(x,y,x+w,y,r);
-      ctx.closePath();
-      if(fill)ctx.fill(); if(stroke)ctx.stroke();
-    }
-
-    function drawBG(){
-      const g = ctx.createLinearGradient(0,0,0,H);
-      g.addColorStop(0, '#0b0b18'); g.addColorStop(1, '#070712');
-      ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-      ctx.globalAlpha=.25;
-      for (let i=0;i<60;i++){
-        const x = (i*113) % (W/1); const y = (i*71) % (H/1);
-        ctx.fillStyle = i%2 ? '#7c3aed' : '#a78bfa'; ctx.fillRect(x,y,2,2);
-      }
-      ctx.globalAlpha=1;
-    }
-    function drawBird(){
-      ctx.save(); ctx.translate(bird.x, bird.y); const angle = Math.max(-0.5, Math.min(0.7, bird.vy/10)); ctx.rotate(angle);
-      const grad = ctx.createLinearGradient(-bird.r,-bird.r,bird.r,bird.r); grad.addColorStop(0,'#a78bfa'); grad.addColorStop(1,'#7c3aed'); ctx.fillStyle = grad;
-      rr(ctx,-bird.r,-bird.r,bird.r*2,bird.r*2,10,true);
-      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(6,-4,5,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='#0b0b12'; ctx.beginPath(); ctx.arc(7,-4,2.5,0,Math.PI*2); ctx.fill();
-      ctx.fillStyle='rgba(255,255,255,.25)'; rr(ctx,-8,4,16,10,5,true);
-      ctx.restore();
-    }
-    function drawPipes(){
-      for (const p of pipes){
-        ctx.fillStyle='rgba(167,139,250,.9)'; rr(ctx,p.x,0,PIPE_W,p.top,10,true);
-        ctx.fillStyle='rgba(124,58,237,.95)'; rr(ctx,p.x,p.bottom,PIPE_W,H-p.bottom,10,true);
-        ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=2;
-        rr(ctx,p.x+1,1,PIPE_W-2,p.top-2,9,false,true);
-        rr(ctx,p.x+1,p.bottom+1,PIPE_W-2,H-p.bottom-2,9,false,true);
-      }
-    }
-    function hud(){
-      ctx.fillStyle = 'rgba(0,0,0,.35)'; rr(ctx, W-160, 14, 146, 36, 10, true);
-      ctx.fillStyle='#eaeaff'; ctx.font='700 18px Inter, sans-serif'; ctx.fillText('Score: '+score, W-150, 38);
-    }
-    function collide(){
-      if (bird.y + bird.r >= H || bird.y - bird.r <= 0) return true;
-      for (const p of pipes){
-        const inX = bird.x + bird.r > p.x && bird.x - bird.r < p.x + PIPE_W;
-        const inY = !(bird.y - bird.r > p.top && bird.y + bird.r < p.bottom);
-        if (inX && inY) return true;
-      }
-      return false;
-    }
-
-    function loop(){
-      drawBG();
-      if (!paused){
-        if (running){
-          bird.vy = Math.min(MAX_FALL, bird.vy + G); bird.y += bird.vy;
-          spawn -= 1; if (spawn<=0){ spawnPipe(); spawn = (PIPE_W + 140); }
-          for (const p of pipes){ p.x -= 2.4; if (!p.passed && p.x + PIPE_W < bird.x){ p.passed=true; score++; scoreEl.textContent=score; } }
-          while (pipes.length && pipes[0].x + PIPE_W < -10) pipes.shift();
-          if (collide()){
-            running=false; gameOver=true;
-            const best = Math.max(+localStorage.getItem('flappy_best_v2')||0, score);
-            localStorage.setItem('flappy_best_v2', best); bestEl.textContent=best;
-          }
+        // Scale canvas for crisp rendering on high-DPI screens
+        function resizeCanvas(){
+          const rect = canvas.getBoundingClientRect();
+          const w = Math.round(rect.width);
+          const h = Math.round(rect.height);
+          canvas.width = Math.floor(w * dpr);
+          canvas.height = Math.floor(h * dpr);
+          ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
-      }
-      drawPipes(); drawBird(); hud();
-      if (!running){
-        ctx.fillStyle='rgba(10,10,15,.65)'; rr(ctx, W/2-160, H/2-90, 320, 180, 16, true);
-        ctx.textAlign='center'; ctx.fillStyle='#eaeaff'; ctx.font='800 28px Inter, sans-serif';
-        ctx.fillText(gameOver ? 'Game Over' : 'Flap to Start', W/2, H/2-20);
-        ctx.font='600 14px Inter, sans-serif'; ctx.fillStyle='rgba(220,220,255,.85)';
-        ctx.fillText(gameOver ? 'Press Start or Space' : 'Tap/Click/Space to flap', W/2, H/2+10); ctx.textAlign='start';
-      }
-      requestAnimationFrame(loop);
-    }
-
-    // Seed a few pipes for depth
-    for (let i=0;i<3;i++) pipes.push({x: 260 + i*200, top: 60 + i*15, bottom: 60 + i*15 + GAP, passed:false});
-    loop();
-
-    // Expose pause/resume so tab switch can control without resetting
-    window.flappy = {
-      pause(){ paused = true; },
-      resume(){
-        paused = false;
-        // Ensure canvas has correct size after returning from hidden state
         resizeCanvas();
-      }
-    };
-  })();
-  </script>
-</body>
+        addEventListener('resize', resizeCanvas);
+
+        // Game constants
+        const G = 0.5;             // gravity
+        const FLAP = -8.5;         // flap impulse
+        const PIPE_GAP_BASE = 160; // starting vertical gap
+        const PIPE_WIDTH = 64;
+        const PIPE_SPACING = 220;  // horizontal distance between pipes
+        const SPEED = 2.2;         // horizontal speed
+        const MAX_ROT = Math.PI/3; // max rotation
+
+        // Sounds (tiny bleeps via WebAudio so we avoid external files)
+        const audioCtx = typeof AudioContext !== 'undefined' ? new (window.AudioContext || window.webkitAudioContext)() : null;
+        let muted = false;
+        function beep(type='square', freq=880, dur=0.07, vol=0.04){
+          if (!audioCtx || muted) return;
+          const o = audioCtx.createOscillator();
+          const g = audioCtx.createGain();
+          o.type = type; o.frequency.value = freq; g.gain.value = vol;
+          o.connect(g); g.connect(audioCtx.destination);
+          o.start(); o.stop(audioCtx.currentTime + dur);
+        }
+
+        // Game state
+        let state = 'ready'; // 'ready' | 'playing' | 'gameover'
+        const bird = { x: 100, y: 260, vy: 0, r: 0 };
+        let pipes = []; // {x, top, bottom}
+        let frame = 0;
+        let score = 0; let best = Number(localStorage.getItem('flappyBest') || 0);
+
+        const overlayReady = document.getElementById('overlay-ready');
+        const overlayOver = document.getElementById('overlay-gameover');
+        const finalScore = document.getElementById('finalScore');
+        const scoreEl = document.getElementById('score');
+        const startBtn = document.getElementById('startBtn');
+        const restartBtn = document.getElementById('restartBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const muteBtn = document.getElementById('muteBtn');
+
+        let paused = false;
+
+        function reset(){
+          bird.x = 100; bird.y = canvas.height/2/dpr; bird.vy = 0; bird.r = 0;
+          pipes = []; frame = 0; score = 0; scoreEl.textContent = score;
+        }
+
+        function start(){
+          reset(); state = 'playing'; overlayReady.classList.add('hidden'); overlayOver.classList.add('hidden');
+          if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+          beep('square', 1200, .08, .05);
+        }
+        function gameOver(){
+          state = 'gameover';
+          beep('sawtooth', 220, .2, .05);
+          overlayOver.classList.remove('hidden');
+          finalScore.textContent = `Score: ${score}  •  Best: ${best = Math.max(best, score)}`;
+          localStorage.setItem('flappyBest', String(best));
+        }
+
+        function flap(){ if (state === 'ready') start(); if (state !== 'playing') return; bird.vy = FLAP; beep('square', 1000, .06, .045); }
+
+        // Input
+        canvas.addEventListener('pointerdown', flap);
+        document.addEventListener('keydown', (e)=>{
+          if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); flap(); }
+          if (e.code === 'KeyP') togglePause();
+          if (e.code === 'KeyM') toggleMute();
+          if (state === 'gameover' && (e.code === 'Space' || e.code === 'Enter')) start();
+        });
+        startBtn.addEventListener('click', start);
+        restartBtn.addEventListener('click', start);
+
+        function togglePause(){
+          paused = !paused; pauseBtn.setAttribute('aria-pressed', String(paused)); pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+        }
+        function toggleMute(){
+          muted = !muted; muteBtn.setAttribute('aria-pressed', String(muted)); muteBtn.textContent = muted ? 'Unmute' : 'Mute';
+        }
+        pauseBtn.addEventListener('click', togglePause);
+        muteBtn.addEventListener('click', toggleMute);
+
+        // Helpers
+        function rand(min, max){ return Math.random() * (max - min) + min; }
+        function spawnPipe(){
+          const gap = Math.max(100, PIPE_GAP_BASE - Math.min(80, score * 2.5)); // gets tighter with score
+          const margin = 40; // top/bottom margin
+          const topHeight = rand(margin, canvas.height/dpr - margin - gap);
+          pipes.push({ x: canvas.width/dpr + PIPE_WIDTH, top: topHeight, bottom: topHeight + gap, scored: false });
+        }
+
+        function rectsOverlap(ax, ay, aw, ah, bx, by, bw, bh){
+          return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+        }
+
+        // Drawing
+        function drawBackground(){
+          const w = canvas.width/dpr, h = canvas.height/dpr;
+          // subtle stars
+          ctx.save();
+          ctx.globalAlpha = .3;
+          for (let i=0;i<40;i++) { const x = (i*97 + frame*0.6) % w; const y = (i*53 % h); ctx.fillStyle = i%7? '#8b5cf6':'#c084fc'; ctx.fillRect(x, y, 2, 2); }
+          ctx.restore();
+
+          // floor gradient
+          const grd = ctx.createLinearGradient(0, h-100, 0, h);
+          grd.addColorStop(0, 'rgba(139,92,246,.15)');
+          grd.addColorStop(1, 'rgba(11,11,15,1)');
+          ctx.fillStyle = grd; ctx.fillRect(0, h-120, w, 120);
+        }
+
+        function drawBird(){
+          const x = bird.x, y = bird.y;
+          ctx.save(); ctx.translate(x, y); ctx.rotate(Math.max(-.35, Math.min(MAX_ROT, bird.vy/18)));
+          // body
+          const r = 14;
+          const grd = ctx.createRadialGradient(0,0,4, 0,0,r);
+          grd.addColorStop(0, '#c084fc'); grd.addColorStop(1, '#8b5cf6');
+          ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI*2); ctx.fill();
+          // wing
+          ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.beginPath(); ctx.ellipse(-6, 4, 7, 4, -.3, 0, Math.PI*2); ctx.fill();
+          // eye
+          ctx.fillStyle = '#000'; ctx.beginPath(); ctx.arc(5, -4, 3.2, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(6, -5, 1.5, 0, Math.PI*2); ctx.fill();
+          // beak
+          ctx.fillStyle = '#fbbf24'; ctx.beginPath(); ctx.moveTo(12, 0); ctx.lineTo(18, 3); ctx.lineTo(12, 6); ctx.closePath(); ctx.fill();
+          ctx.restore();
+        }
+
+        function drawPipes(){
+          const w = canvas.width/dpr, h = canvas.height/dpr;
+          ctx.fillStyle = '#1c1c28';
+          pipes.forEach(p => {
+            // top pipe
+            ctx.fillStyle = '#1c1c28';
+            ctx.fillRect(p.x, 0, PIPE_WIDTH, p.top);
+            // cap
+            ctx.fillStyle = '#2a2a3a'; ctx.fillRect(p.x-2, p.top-12, PIPE_WIDTH+4, 12);
+            // bottom pipe
+            ctx.fillStyle = '#1c1c28';
+            ctx.fillRect(p.x, p.bottom, PIPE_WIDTH, h - p.bottom);
+            ctx.fillStyle = '#2a2a3a'; ctx.fillRect(p.x-2, p.bottom, PIPE_WIDTH+4, 12);
+            // accent lines
+            ctx.fillStyle = 'rgba(139,92,246,.35)';
+            ctx.fillRect(p.x + PIPE_WIDTH - 10, 0, 2, p.top);
+            ctx.fillRect(p.x + PIPE_WIDTH - 10, p.bottom, 2, h - p.bottom);
+          });
+        }
+
+        function drawScore(){
+          ctx.fillStyle = 'rgba(255,255,255,.9)'; ctx.font = '700 24px ui-sans-serif, system-ui, -apple-system';
+          ctx.fillText(String(score), 12, 30);
+        }
+
+        // Main loop
+        let last = 0;
+        function loop(t){
+          requestAnimationFrame(loop);
+          if (paused) return;
+          const dt = Math.min(32, t - last); last = t; frame++;
+
+          const w = canvas.width/dpr, h = canvas.height/dpr;
+          ctx.clearRect(0, 0, w, h);
+
+          if (state !== 'playing') { drawBackground(); drawPipes(); drawBird(); drawScore(); return; }
+
+          // Spawn pipes
+          if (frame % Math.floor(PIPE_SPACING / SPEED) === 0) spawnPipe();
+
+          // Update pipes
+          for (let i = pipes.length - 1; i >= 0; i--) {
+            const p = pipes[i]; p.x -= SPEED;
+            if (!p.scored && p.x + PIPE_WIDTH < bird.x) { p.scored = true; score++; scoreEl.textContent = score; beep('triangle', 800, .04, .035); }
+            if (p.x < -PIPE_WIDTH - 10) pipes.splice(i, 1);
+          }
+
+          // Update bird
+          bird.vy += G; bird.y += bird.vy; bird.r = Math.max(-.25, Math.min(MAX_ROT, bird.vy/18));
+
+          // Collisions
+          const bw = 24, bh = 22; // bird bbox
+          const bx = bird.x - bw/2, by = bird.y - bh/2;
+          if (by < 0 || by + bh > h - 18) return gameOver();
+          for (const p of pipes) {
+            if (rectsOverlap(bx, by, bw, bh, p.x, 0, PIPE_WIDTH, p.top) || rectsOverlap(bx, by, bw, bh, p.x, p.bottom, PIPE_WIDTH, h - p.bottom)) {
+              return gameOver();
+            }
+          }
+
+          // Draw
+          drawBackground();
+          drawPipes();
+          drawBird();
+          drawScore();
+        }
+        requestAnimationFrame(loop);
+      })();
+    </script>
+  </body>
 </html>

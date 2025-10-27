@@ -43,7 +43,7 @@
         width:100%; height:auto; aspect-ratio:3/4;
         border-radius:12px;
         background:linear-gradient(180deg, #151521, #0b0b0f);
-        touch-action:none; /* pointer goes to game, not scroll */
+        touch-action:none; /* pointer goes to game, not scroll/zoom */
       }
       footer{ text-align:center; color:var(--muted); font-size:.9rem; margin-top:8px; }
 
@@ -170,8 +170,73 @@
       });
       canvas.addEventListener('pointerdown', e => { e.preventDefault(); flapBird(); }, { passive:false });
 
-      // Pause when tab not focused
-      addEventListener('blur',  () => paused = true);
+      // ===== Universal zoom clamp scoped to the game canvas =====
+      let zoomBlockActive = false;
+      let lastTap = 0;
+
+      function enableZoomBlockers() {
+        if (zoomBlockActive) return;
+        zoomBlockActive = true;
+
+        // Ctrl/Meta + wheel (trackpad pinch on many browsers)
+        enableZoomBlockers._onWheel = (e) => {
+          if (!zoomBlockActive) return;
+          if (e.ctrlKey || e.metaKey) e.preventDefault();
+        };
+        document.addEventListener('wheel', enableZoomBlockers._onWheel, { passive:false });
+
+        // Zoom key combos
+        enableZoomBlockers._onKeyDown = (e) => {
+          if (!zoomBlockActive) return;
+          const k = e.key;
+          const zoomKeys = (k === '+' || k === '-' || k === '=' || k === '_' || k === '0');
+          if ((e.ctrlKey || e.metaKey) && zoomKeys) e.preventDefault();
+        };
+        document.addEventListener('keydown', enableZoomBlockers._onKeyDown, { passive:false });
+
+        // Safari/iOS gesture events
+        enableZoomBlockers._onGesture = (e) => { if (zoomBlockActive) e.preventDefault(); };
+        document.addEventListener('gesturestart', enableZoomBlockers._onGesture, { passive:false });
+        document.addEventListener('gesturechange', enableZoomBlockers._onGesture, { passive:false });
+        document.addEventListener('gestureend', enableZoomBlockers._onGesture, { passive:false });
+      }
+
+      function disableZoomBlockers() {
+        if (!zoomBlockActive) return;
+        zoomBlockActive = false;
+        document.removeEventListener('wheel', enableZoomBlockers._onWheel);
+        document.removeEventListener('keydown', enableZoomBlockers._onKeyDown);
+        document.removeEventListener('gesturestart', enableZoomBlockers._onGesture);
+        document.removeEventListener('gesturechange', enableZoomBlockers._onGesture);
+        document.removeEventListener('gestureend', enableZoomBlockers._onGesture);
+      }
+
+      // Engage blockers while interacting with the canvas
+      canvas.addEventListener('pointerdown', () => { enableZoomBlockers(); });
+      canvas.addEventListener('pointerup',   () => { disableZoomBlockers(); });
+      canvas.addEventListener('pointercancel', () => { disableZoomBlockers(); });
+      canvas.addEventListener('pointerleave',  () => { disableZoomBlockers(); });
+
+      // Touch: kill pinch + double-tap zoom on the canvas
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length > 1) e.preventDefault(); // pinch start
+        enableZoomBlockers();
+      }, { passive:false });
+
+      canvas.addEventListener('touchmove', (e) => {
+        if (e.touches.length > 1) e.preventDefault(); // ongoing pinch
+      }, { passive:false });
+
+      canvas.addEventListener('touchend', (e) => {
+        const now = performance.now();
+        if (now - lastTap < 300) e.preventDefault(); // double-tap zoom
+        lastTap = now;
+        // release shortly after all fingers up
+        if (e.touches.length === 0) setTimeout(() => { disableZoomBlockers(); }, 120);
+      }, { passive:false });
+
+      // ---- Pause when tab not focused ----
+      addEventListener('blur',  () => { paused = true;  disableZoomBlockers(); });
       addEventListener('focus', () => { paused = false; last = 0; });
 
       function loop(t = 0){

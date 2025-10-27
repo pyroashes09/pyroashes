@@ -140,30 +140,39 @@
       <div class="grid">
         <div class="card col-12">
           <h3>Your Profiles</h3>
-          <a class="link-row" href="#" target="_blank" rel="noopener">
+
+          <!-- Discord -->
+          <a class="link-row" href="https://discord.com/users/1201937202808885320" target="_blank" rel="noopener">
             <span class="link-icon" aria-hidden="true">D</span>
             <div>
               <div style="font-weight:700">Discord</div>
-              <div class="muted">Join me on Discord</div>
+              <div class="muted">@pyroashes — user ID 1201937202808885320</div>
             </div>
           </a>
+
           <div style="height:.6rem"></div>
-          <a class="link-row" href="#" target="_blank" rel="noopener">
+
+          <!-- GitHub -->
+          <a class="link-row" href="https://github.com/pyroashes09" target="_blank" rel="noopener">
             <span class="link-icon" aria-hidden="true">G</span>
             <div>
               <div style="font-weight:700">GitHub</div>
-              <div class="muted">See my code & repos</div>
+              <div class="muted">github.com/pyroashes09</div>
             </div>
           </a>
+
           <div style="height:.6rem"></div>
-          <a class="link-row" href="#" target="_blank" rel="noopener">
+
+          <!-- Steam -->
+          <a class="link-row" href="https://steamcommunity.com/profiles/76561199470936572/" target="_blank" rel="noopener">
             <span class="link-icon" aria-hidden="true">S</span>
             <div>
               <div style="font-weight:700">Steam</div>
-              <div class="muted">My Steam profile & games</div>
+              <div class="muted">steamcommunity.com/profiles/76561199470936572</div>
             </div>
           </a>
-          <p class="muted" style="margin-top:.9rem">Swap the three <code>href="#"</code> values with your real links.</p>
+
+          <p class="muted" style="margin-top:.9rem">Links open in a new tab.</p>
         </div>
       </div>
     </section>
@@ -186,6 +195,14 @@
     panelLinks.classList.toggle('active', !isGames);
     btns.forEach(b=> b.classList.toggle('active', b.dataset.tab === tab));
     hamburger.setAttribute('aria-pressed', (!isGames).toString());
+
+    // Pause Flappy when leaving, resume when returning
+    if (window.flappy){
+      if (isGames){ window.flappy.resume(); }
+      else { window.flappy.pause(); }
+    }
+
+    // Smooth scroll to top on mobile
     if (matchMedia('(max-width: 640px)').matches) window.scrollTo({top:0, behavior:'smooth'});
   }
   setActive('games');
@@ -202,7 +219,7 @@
     el.addEventListener('touchmove', e => { e.preventDefault(); }, {passive:false});
   }
 
-  /* ===== Flappy Bird (mobile-friendly) ===== */
+  /* ===== Flappy Bird (mobile/desktop + tab-safe) ===== */
   ;(function(){
     const c = document.getElementById('flappy');
     const ctx = c.getContext('2d', { alpha: false });
@@ -211,8 +228,11 @@
     lockTouch(c);
 
     let W = c.width, H = c.height;
+
     function resizeCanvas(){
       const rect = c.getBoundingClientRect();
+      // Skip resize when hidden (display:none -> 0 size). Prevents "reset" when switching tabs.
+      if (rect.width === 0 || rect.height === 0) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       c.width = Math.floor(rect.width * dpr);
       c.height = Math.floor(rect.height * dpr);
@@ -223,6 +243,7 @@
     resizeCanvas();
 
     let running=false, gameOver=false, score=0, best=+localStorage.getItem('flappy_best_v2')||0;
+    let paused=false; // controlled by UI and tab switch
     bestEl.textContent = best;
 
     const bird = { x: 160, y: 160, r: 12, vy: 0 };
@@ -248,9 +269,9 @@
 
     c.addEventListener('mousedown', flap);
     c.addEventListener('touchstart', (e)=>{ e.preventDefault(); flap(); }, {passive:false});
-    document.getElementById('flappy-start').addEventListener('click', ()=>{ reset(); running=true; });
-    let paused=false;
-    document.getElementById('flappy-pause').addEventListener('click', ()=> paused=!paused );
+    document.getElementById('flappy-start').addEventListener('click', ()=>{ reset(); running=true; paused=false; });
+    document.getElementById('flappy-pause').addEventListener('click', ()=> { paused = !paused; });
+
     addEventListener('keydown', (e)=>{ if(e.key===' '){ e.preventDefault(); flap(); } });
 
     function rr(ctx,x,y,w,h,r,fill=true,stroke=false){
@@ -329,16 +350,24 @@
         ctx.textAlign='center'; ctx.fillStyle='#eaeaff'; ctx.font='800 28px Inter, sans-serif';
         ctx.fillText(gameOver ? 'Game Over' : 'Flap to Start', W/2, H/2-20);
         ctx.font='600 14px Inter, sans-serif'; ctx.fillStyle='rgba(220,220,255,.85)';
-        ctx.fillText(gameOver ? 'Tap Start or press Space' : 'Tap/Click/Space to flap', W/2, H/2+10); ctx.textAlign='start';
+        ctx.fillText(gameOver ? 'Press Start or Space' : 'Tap/Click/Space to flap', W/2, H/2+10); ctx.textAlign='start';
       }
       requestAnimationFrame(loop);
     }
 
-    // Seed + go
-    reset();
+    // Seed a few pipes for depth
     for (let i=0;i<3;i++) pipes.push({x: 260 + i*200, top: 60 + i*15, bottom: 60 + i*15 + GAP, passed:false});
-    document.getElementById('flappy-start').click(); // auto start on load
     loop();
+
+    // Expose pause/resume so tab switch can control without resetting
+    window.flappy = {
+      pause(){ paused = true; },
+      resume(){
+        paused = false;
+        // Ensure canvas has correct size after returning from hidden state
+        resizeCanvas();
+      }
+    };
   })();
   </script>
 </body>

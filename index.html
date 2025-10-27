@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>pyroashes.lol</title>
+  <meta name="description" content="pyroashes.lol – a tiny dark corner of the web." />
+  <style>
+    :root{
+      --bg-0: #07070a;   /* near-black */
+      --bg-1: #0c0a10;   /* black-purple */
+      --ink:  #b794f4;   /* soft purple */
+      --ink2: #6d28d9;   /* deeper purple */
+      --muted:#c4b5fd;   /* pale purple */
+      --glow:#a78bfa;
+    }
+
+    /* Reset-ish */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      color: #eee;
+      background:
+        radial-gradient(1200px 800px at 20% -10%, rgba(167,139,250,0.08), transparent 60%),
+        radial-gradient(1000px 700px at 110% 30%, rgba(124,58,237,0.08), transparent 60%),
+        radial-gradient(900px 600px at 50% 120%, rgba(147,51,234,0.08), transparent 60%),
+        linear-gradient(180deg, var(--bg-1), var(--bg-0));
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* Subtle dotted noise */
+    .grain {
+      position: fixed;
+      inset: -50%;
+      background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1.5px);
+      background-size: 7px 7px;
+      opacity: 0.15;
+      filter: contrast(140%) saturate(120%);
+      pointer-events: none;
+      animation: drizzle 14s linear infinite;
+    }
+    @keyframes drizzle {
+      from { transform: translate3d(0,0,0) }
+      to   { transform: translate3d(-7px,-7px,0) }
+    }
+
+    /* Title badge */
+    .badge {
+      position: fixed;
+      top: 18px;
+      left: 18px;
+      padding: 10px 14px;
+      border: 1px dashed rgba(167,139,250,0.5);
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      background: rgba(10, 10, 16, 0.4);
+      box-shadow: 0 0 24px rgba(167,139,250,0.15), inset 0 0 12px rgba(124,58,237,0.08);
+      font-size: 14px;
+    }
+
+    /* Messy blobs (pure decoration) */
+    .blob {
+      position: fixed;
+      border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%;
+      filter: blur(30px);
+      opacity: 0.12;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      animation: drift 16s ease-in-out infinite alternate;
+    }
+    .blob.b1 { width: 30vmax; height: 30vmax; left: -8vmax; top: 10vmax; background: radial-gradient(circle at 30% 30%, var(--glow), transparent 60%); animation-delay: -2s; }
+    .blob.b2 { width: 25vmax; height: 25vmax; right: -10vmax; top: 0vmax;  background: radial-gradient(circle at 60% 40%, var(--ink2), transparent 60%); animation-delay: -6s; }
+    .blob.b3 { width: 22vmax; height: 22vmax; left: 40vmax; bottom: -8vmax; background: radial-gradient(circle at 40% 60%, #7c3aed, transparent 60%); animation-delay: -10s; }
+    @keyframes drift {
+      from { transform: translate3d(0,0,0) rotate(0.5deg); }
+      to   { transform: translate3d(2vmax,-1vmax,0) rotate(-1deg); }
+    }
+
+    /* Clickable icon chips (“dotted around”) */
+    .icon {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      width: clamp(64px, 9vmin, 96px);
+      aspect-ratio: 1 / 1;
+      border-radius: 16px;
+      border: 1px dashed rgba(167,139,250,0.45);
+      background: rgba(12, 10, 16, 0.55);
+      box-shadow:
+        0 8px 30px rgba(124,58,237,0.18),
+        inset 0 0 16px rgba(124,58,237,0.10);
+      text-decoration: none;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease;
+      outline: none;
+    }
+    .icon:hover, .icon:focus-visible {
+      transform: translateY(-3px) scale(1.03);
+      background: rgba(20, 16, 28, 0.7);
+      border-color: rgba(199,179,255,0.75);
+      box-shadow:
+        0 16px 40px rgba(167,139,250,0.28),
+        inset 0 0 22px rgba(167,139,250,0.18);
+    }
+
+    /* Slight individual floating to keep the layout messy */
+    .icon[data-float="1"] { animation: bob1 7s ease-in-out infinite; }
+    .icon[data-float="2"] { animation: bob2 9s ease-in-out infinite; }
+    .icon[data-float="3"] { animation: bob3 8.5s ease-in-out infinite; }
+    @keyframes bob1 { 0%{ transform: translateY(-2px) } 50%{ transform: translateY(2px) } 100%{ transform: translateY(-2px) } }
+    @keyframes bob2 { 0%{ transform: translateY(1px) } 50%{ transform: translateY(-3px) } 100%{ transform: translateY(1px) } }
+    @keyframes bob3 { 0%{ transform: translateY(-1px) } 50%{ transform: translateY(3px) } 100%{ transform: translateY(-1px) } }
+
+    /* Place icons at scattered positions for desktop */
+    .icon.steam   { left: 12%; top: 28%;  transform: rotate(-2deg); }
+    .icon.discord { right: 14%; top: 18%; transform: rotate(1.5deg); }
+    .icon.github  { left: 58%; bottom: 16%; transform: rotate(-1deg); }
+
+    /* SVG sizing */
+    .icon svg { width: 55%; height: 55%; }
+
+    /* Accessible label under icons (visually subtle) */
+    .label {
+      position: absolute;
+      bottom: -1.6rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.8rem;
+      color: rgba(208, 191, 255, 0.7);
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* Mobile adjustments: keep the messy feel but reflow */
+    @media (max-width: 640px) {
+      .badge { font-size: 13px; padding: 8px 12px; }
+      .icon { width: clamp(64px, 22vw, 92px); }
+      .icon.steam   { left: 8%;  top: 22%;  transform: rotate(-1deg); }
+      .icon.discord { right: 8%; top: 44%; transform: rotate(2deg); }
+      .icon.github  { left: 50%; bottom: 10%; transform: translateX(-50%) rotate(-2deg); }
+    }
+
+    /* Focus ring for keyboard users */
+    .icon:focus-visible {
+      box-shadow:
+        0 0 0 3px rgba(199,179,255,0.4),
+        0 10px 30px rgba(167,139,250,0.28),
+        inset 0 0 22px rgba(167,139,250,0.18);
+    }
+
+    /* Tiny footer credit */
+    footer {
+      position: fixed;
+      right: 14px;
+      bottom: 12px;
+      font-size: 12px;
+      color: rgba(200, 185, 255, 0.5);
+      letter-spacing: 0.3px;
+    }
+    footer a { color: rgba(200, 185, 255, 0.85); text-decoration: none; border-bottom: 1px dotted rgba(200,185,255,0.35); }
+    footer a:hover { border-bottom-color: rgba(200,185,255,0.8); }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="blob b1" aria-hidden="true"></div>
+  <div class="blob b2" aria-hidden="true"></div>
+  <div class="blob b3" aria-hidden="true"></div>
+
+  <div class="badge">pyroashes.lol</div>
+
+  <!--
+    TODO: Replace the href values with your actual profile links.
+      Steam   → https://steamcommunity.com/id/YOUR_ID   or https://steamcommunity.com/profiles/YOUR_STEAMID64
+      Discord → https://discord.com/users/YOUR_USER_ID  (right-click user → Copy User ID, requires Developer Mode)
+      GitHub  → https://github.com/YOUR_USERNAME
+  -->
+
+  <!-- Steam -->
+  <a class="icon steam" data-float="1" href="https://steamcommunity.com/id/YOUR_ID"
+     target="_blank" rel="noopener noreferrer" aria-label="Steam profile" title="Steam">
+    <!-- Steam SVG -->
+    <svg viewBox="0 0 256 256" role="img" aria-hidden="true">
+      <circle cx="128" cy="128" r="124" fill="none" stroke="rgba(167,139,250,0.35)" stroke-width="8"/>
+      <path d="M94 146l-31-12a28 28 0 104 20l32 11a40 40 0 107-19z" fill="url(#g1)" />
+      <defs>
+        <radialGradient id="g1" cx="0.4" cy="0.4" r="1">
+          <stop offset="0" stop-color="#c4b5fd"/>
+          <stop offset="1" stop-color="#6d28d9"/>
+        </radialGradient>
+      </defs>
+      <circle cx="176" cy="128" r="38" fill="none" stroke="#c4b5fd" stroke-width="10"/>
+      <circle cx="176" cy="128" r="22" fill="none" stroke="rgba(199,179,255,0.85)" stroke-width="6"/>
+    </svg>
+    <span class="label">Steam</span>
+  </a>
+
+  <!-- Discord -->
+  <a class="icon discord" data-float="2" href="https://discord.com/users/YOUR_USER_ID"
+     target="_blank" rel="noopener noreferrer" aria-label="Discord profile" title="Discord">
+    <!-- Discord SVG -->
+    <svg viewBox="0 0 245 240" role="img" aria-hidden="true">
+      <path d="M104 103c-8 0-14 7-14 15s6 15 14 15c9 0 15-7 15-15s-6-15-15-15zm53 0c-8 0-14 7-14 15s6 15 14 15c9 0 15-7 15-15s-6-15-15-15z"
+            fill="#c4b5fd"/>
+      <path d="M222 40c-19-9-39-16-59-19l-3 6c-18-3-36-3-54 0l-4-6c-20 4-40 10-59 19-26 46-33 91-29 135 25 18 50 29 74 36 6-9 11-18 14-27-8-3-16-7-24-11 2-2 5-4 7-6 13 6 26 10 39 13 13 2 26 3 39 0 13-2 26-7 39-13 3 2 5 4 8 6-8 4-16 8-24 11 4 9 9 18 15 27 24-7 49-18 73-36 5-45-3-89-29-135z"
+            fill="url(#g2)"/>
+      <defs>
+        <linearGradient id="g2" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stop-color="#6d28d9"/>
+          <stop offset="1" stop-color="#a78bfa"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <span class="label">Discord</span>
+  </a>
+
+  <!-- GitHub -->
+  <a class="icon github" data-float="3" href="https://github.com/YOUR_USERNAME"
+     target="_blank" rel="noopener noreferrer" aria-label="GitHub profile" title="GitHub">
+    <!-- GitHub SVG -->
+    <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+      <path d="M12 .5A11.5 11.5 0 000 12c0 5.08 3.29 9.38 7.86 10.9.58.11.8-.25.8-.56v-2c-3.2.7-3.87-1.38-3.87-1.38-.53-1.35-1.28-1.71-1.28-1.71-1.05-.73.08-.71.08-.71 1.16.08 1.77 1.2 1.77 1.2 1.03 1.77 2.7 1.26 3.35.96.1-.76.41-1.26.74-1.55-2.56-.29-5.25-1.3-5.25-5.8 0-1.28.46-2.33 1.21-3.15-.12-.3-.53-1.52.12-3.16 0 0 1-.32 3.3 1.2a11.4 11.4 0 016 0c2.3-1.52 3.3-1.2 3.3-1.2.65 1.64.24 2.86.12 3.16.76.82 1.21 1.87 1.21 3.15 0 4.51-2.7 5.51-5.27 5.79.42.36.79 1.08.79 2.18v3.23c0 .31.21.68.8.56A11.5 11.5 0 0024 12 11.5 11.5 0 0012 .5z"
+            fill="#c4b5fd"/>
+    </svg>
+    <span class="label">GitHub</span>
+  </a>
+
+  <footer>© <span id="y"></span> pyroashes.lol</footer>
+  <script>
+    // Only used to drop the current year into the footer.
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

@@ -210,9 +210,11 @@ function showSection(id){
     setTimeout(()=>{ if(window._api && window._api.fit) window._api.fit(); }, 50);
   }
 }
-hamburger.addEventListener('click', ()=>{
-  menu.classList.toggle('show');
-  menu.setAttribute('aria-hidden', menu.classList.contains('show') ? 'false' : 'true');
+// Quick toggle: tap the three bars to swap between sections
+hamburger.addEventListener('click', (e)=>{
+  e.preventDefault();
+  const active = document.querySelector('section.active')?.id || 'links';
+  showSection(active === 'links' ? 'games' : 'links');
 });
 menu.querySelectorAll('button').forEach(b=>b.addEventListener('click', ()=>showSection(b.dataset.target)));
 document.addEventListener('click', (e)=>{ if(!menu.contains(e.target) && !hamburger.contains(e.target)) menu.classList.remove('show'); });
@@ -351,3 +353,4 @@ showSection('links');
 </script>
 </body>
 </html>
+

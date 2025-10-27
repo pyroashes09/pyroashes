@@ -2,72 +2,26 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Prevent double‑tap zoom: disallow user scaling on the game page -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
     <title>pyroashes.lol</title>
     <meta name="description" content="pyroashes.lol • links and a built-in Flappy game" />
     <meta name="theme-color" content="#8b5cf6" />
     <style>
-      :root {
-        --bg: #0b0b0f;
-        --fg: #e7e7ff;
-        --muted: #b6b6d1;
-        --accent: #8b5cf6;
-        --accent-2: #c084fc;
-        --card: linear-gradient(180deg, rgba(139,92,246,0.08), rgba(139,92,246,0.03));
-      }
+      :root { --bg:#0b0b0f; --fg:#e7e7ff; --muted:#b6b6d1; --accent:#8b5cf6; --accent-2:#c084fc; --card:linear-gradient(180deg, rgba(139,92,246,.08), rgba(139,92,246,.03)); }
       * { box-sizing: border-box; }
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        font-family: system-ui, sans-serif;
-        background: var(--bg);
-        color: var(--fg);
-        line-height: 1.5;
-        overflow: hidden; /* prevent scrolling */
-      }
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      .container {
-        width: 90vw;
-        height: 90vh;
-        max-width: 900px;
-        max-height: 700px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-      }
-      header { display: flex; justify-content: space-between; align-items: center; }
-      h1 { margin: 0; font-size: 1.5rem; color: var(--accent-2); }
-      nav a { color: var(--fg); margin-left: 1rem; text-decoration: none; }
-      .card {
-        background: var(--card);
-        border: 1px solid rgba(139,92,246,.18);
-        border-radius: 14px;
-        padding: 12px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      main {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        height: 100%;
-      }
-      canvas#gameCanvas {
-        width: 100%;
-        height: auto;
-        aspect-ratio: 3/4;
-        border-radius: 12px;
-        background: linear-gradient(180deg, #151521, #0b0b0f);
-      }
-      footer { text-align: center; color: var(--muted); font-size: .9rem; margin-top: 8px; }
+      html, body { margin:0; padding:0; height:100%; font-family: system-ui, sans-serif; background: var(--bg); color: var(--fg); line-height:1.5; overflow:hidden; /* no scroll */ }
+      /* Reduce browser touch gestures on mobile */
+      html, body { touch-action: manipulation; -ms-touch-action: manipulation; overscroll-behavior: contain; }
+      body { display:flex; align-items:center; justify-content:center; }
+      .container { width:90vw; height:90vh; max-width:900px; max-height:700px; display:flex; flex-direction:column; justify-content:space-between; }
+      header { display:flex; justify-content:space-between; align-items:center; }
+      h1 { margin:0; font-size:1.5rem; color: var(--accent-2); }
+      nav a { color:var(--fg); margin-left:1rem; text-decoration:none; }
+      .card { background:var(--card); border:1px solid rgba(139,92,246,.18); border-radius:14px; padding:12px; flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+      main { display:grid; grid-template-columns:1fr 1fr; gap:16px; height:100%; }
+      canvas#gameCanvas { width:100%; height:auto; aspect-ratio:3/4; border-radius:12px; background:linear-gradient(180deg, #151521, #0b0b0f); /* Disable double‑tap/pinch zoom on canvas */ touch-action:none; -ms-touch-action:none; }
+      footer { text-align:center; color:var(--muted); font-size:.9rem; margin-top:8px; }
     </style>
   </head>
   <body>
@@ -89,9 +43,9 @@
         <section id="links" class="card">
           <h2>My Links</h2>
           <ul>
-            <li><a id="discordLink" target="_blank">Discord</a></li>
-            <li><a id="githubLink" target="_blank">GitHub</a></li>
-            <li><a id="steamLink" target="_blank">Steam</a></li>
+            <li><a id="discordLink" target="_blank" rel="noopener noreferrer">Discord</a></li>
+            <li><a id="githubLink" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+            <li><a id="steamLink" target="_blank" rel="noopener noreferrer">Steam</a></li>
           </ul>
         </section>
       </main>
@@ -100,75 +54,64 @@
     </div>
 
     <script>
-      const LINKS = {
-        discord: 'https://discord.com/users/1201937202808885320',
-        github: 'https://github.com/pyroashes09',
-        steam: 'https://steamcommunity.com/profiles/76561199470936572/'
-      };
+      // ---- Paste your links once; buttons update automatically ----
+      const LINKS = { discord:'PASTE_DISCORD_URL_HERE', github:'PASTE_GITHUB_URL_HERE', steam:'PASTE_STEAM_URL_HERE' };
       document.getElementById('year').textContent = new Date().getFullYear();
       document.getElementById('discordLink').href = LINKS.discord;
       document.getElementById('githubLink').href = LINKS.github;
       document.getElementById('steamLink').href = LINKS.steam;
 
-      const canvas = document.getElementById('gameCanvas');
-      const ctx = canvas.getContext('2d');
-      let bird = {x: 50, y: 150, vy: 0};
-      let pipes = [];
-      let frame = 0;
-      let score = 0;
-      const gravity = 0.4;
-      const flap = -7;
-      const gap = 200;
-      const pipeWidth = 60;
-      const speed = 2;
+      // ---- Prevent double‑tap zoom / pinch zoom on iOS & mobile browsers ----
+      // 1) Block the iOS double‑tap zoom gesture
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(e){
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) { e.preventDefault(); }
+        lastTouchEnd = now;
+      }, { passive:false });
+      // 2) Block pinch zoom gesture on Safari
+      document.addEventListener('gesturestart', function(e){ e.preventDefault(); }, { passive:false });
+
+      // 3) Ensure game canvas taps never trigger scrolling/zooming
+      const gameCanvas = document.getElementById('gameCanvas');
+      gameCanvas.addEventListener('touchstart', e => e.preventDefault(), { passive:false });
+      gameCanvas.addEventListener('touchmove',  e => e.preventDefault(), { passive:false });
+
+      // ---- Simple Flappy game (with comfortable gap) ----
+      const canvas = gameCanvas; const ctx = canvas.getContext('2d');
+      let bird = {x:50, y:150, vy:0};
+      let pipes = []; let frame = 0; let score = 0;
+      const gravity = 0.4, flap = -7, gap = 200, pipeWidth = 60, speed = 2;
 
       function flapBird(){ bird.vy = flap; }
-      document.addEventListener('keydown', e => { if (e.code === 'Space') flapBird(); });
-      canvas.addEventListener('pointerdown', flapBird);
+      document.addEventListener('keydown', e => { if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); flapBird(); } });
+      canvas.addEventListener('pointerdown', (e)=>{ e.preventDefault(); flapBird(); });
 
-      function reset(){ bird = {x: 50, y: 150, vy: 0}; pipes = []; score = 0; }
-
-      function spawnPipe(){
-        const top = Math.random() * 150 + 50;
-        pipes.push({x: canvas.width, top: top, bottom: top + gap});
-      }
+      function reset(){ bird = {x:50, y:150, vy:0}; pipes = []; score = 0; }
+      function spawnPipe(){ const top = Math.random()*150 + 50; pipes.push({x:canvas.width, top, bottom: top + gap}); }
 
       function loop(){
         ctx.clearRect(0,0,canvas.width,canvas.height);
-        frame++;
-        if(frame % 100 === 0) spawnPipe();
+        frame++; if (frame % 100 === 0) spawnPipe();
 
-        bird.vy += gravity;
-        bird.y += bird.vy;
-
-        ctx.fillStyle = '#c084fc';
-        ctx.beginPath();
-        ctx.arc(bird.x, bird.y, 10, 0, Math.PI*2);
-        ctx.fill();
+        bird.vy += gravity; bird.y += bird.vy;
+        ctx.fillStyle = '#c084fc'; ctx.beginPath(); ctx.arc(bird.x, bird.y, 10, 0, Math.PI*2); ctx.fill();
 
         ctx.fillStyle = '#1c1c28';
         pipes.forEach(p => {
           p.x -= speed;
           ctx.fillRect(p.x, 0, pipeWidth, p.top);
           ctx.fillRect(p.x, p.bottom, pipeWidth, canvas.height - p.bottom);
-          if (p.x + pipeWidth < bird.x && !p.scored){ score++; p.scored = true; }
-          if (
-            bird.x + 10 > p.x && bird.x - 10 < p.x + pipeWidth &&
-            (bird.y - 10 < p.top || bird.y + 10 > p.bottom)
-          ) reset();
+          if (p.x + pipeWidth < bird.x && !p.scored) { score++; p.scored = true; }
+          if (bird.x + 10 > p.x && bird.x - 10 < p.x + pipeWidth && (bird.y - 10 < p.top || bird.y + 10 > p.bottom)) reset();
         });
         pipes = pipes.filter(p => p.x + pipeWidth > 0);
-
         if (bird.y > canvas.height || bird.y < 0) reset();
 
-        ctx.fillStyle = '#fff';
-        ctx.font = '20px sans-serif';
-        ctx.fillText('Score: ' + score, 10, 25);
-
+        ctx.fillStyle = '#fff'; ctx.font = '20px sans-serif'; ctx.fillText('Score: ' + score, 10, 25);
         requestAnimationFrame(loop);
       }
       loop();
     </script>
   </body>
 </html>
-

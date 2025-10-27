@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>pyroashes.lol</title>
-    <meta name="description" content="pyroashes.lol • links and a built‑in Flappy game" />
+    <meta name="description" content="pyroashes.lol • links and a built-in Flappy game" />
     <meta name="theme-color" content="#8b5cf6" />
     <style>
       :root {
@@ -16,33 +16,58 @@
         --card: linear-gradient(180deg, rgba(139,92,246,0.08), rgba(139,92,246,0.03));
       }
       * { box-sizing: border-box; }
-      body {
+      html, body {
         margin: 0;
+        padding: 0;
+        height: 100%;
         font-family: system-ui, sans-serif;
         background: var(--bg);
         color: var(--fg);
         line-height: 1.5;
-        padding: 0 16px;
+        overflow: hidden; /* prevent scrolling */
       }
-      .container { max-width: 900px; margin: 0 auto; }
-      header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; }
+      body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .container {
+        width: 90vw;
+        height: 90vh;
+        max-width: 900px;
+        max-height: 700px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      header { display: flex; justify-content: space-between; align-items: center; }
       h1 { margin: 0; font-size: 1.5rem; color: var(--accent-2); }
       nav a { color: var(--fg); margin-left: 1rem; text-decoration: none; }
       .card {
         background: var(--card);
         border: 1px solid rgba(139,92,246,.18);
         border-radius: 14px;
-        padding: 16px;
-        margin-bottom: 24px;
+        padding: 12px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        height: 100%;
       }
       canvas#gameCanvas {
         width: 100%;
         height: auto;
-        aspect-ratio: 3/4; /* shorter window for normal screens */
+        aspect-ratio: 3/4;
         border-radius: 12px;
         background: linear-gradient(180deg, #151521, #0b0b0f);
       }
-      footer { text-align: center; color: var(--muted); margin: 16px 0; font-size: .9rem; }
+      footer { text-align: center; color: var(--muted); font-size: .9rem; margin-top: 8px; }
     </style>
   </head>
   <body>
@@ -55,19 +80,21 @@
         </nav>
       </header>
 
-      <section id="game" class="card">
-        <h2>Flappy</h2>
-        <canvas id="gameCanvas" width="360" height="480"></canvas>
-      </section>
+      <main>
+        <section id="game" class="card">
+          <h2>Flappy</h2>
+          <canvas id="gameCanvas" width="360" height="480"></canvas>
+        </section>
 
-      <section id="links" class="card">
-        <h2>My Links</h2>
-        <ul>
-          <li><a id="discordLink" target="_blank">Discord</a></li>
-          <li><a id="githubLink" target="_blank">GitHub</a></li>
-          <li><a id="steamLink" target="_blank">Steam</a></li>
-        </ul>
-      </section>
+        <section id="links" class="card">
+          <h2>My Links</h2>
+          <ul>
+            <li><a id="discordLink" target="_blank">Discord</a></li>
+            <li><a id="githubLink" target="_blank">GitHub</a></li>
+            <li><a id="steamLink" target="_blank">Steam</a></li>
+          </ul>
+        </section>
+      </main>
 
       <footer>© <span id="year"></span> pyroashes.lol</footer>
     </div>
@@ -83,7 +110,6 @@
       document.getElementById('githubLink').href = LINKS.github;
       document.getElementById('steamLink').href = LINKS.steam;
 
-      // Simple Flappy game with wider pipe gaps and smaller height
       const canvas = document.getElementById('gameCanvas');
       const ctx = canvas.getContext('2d');
       let bird = {x: 50, y: 150, vy: 0};
@@ -92,7 +118,7 @@
       let score = 0;
       const gravity = 0.4;
       const flap = -7;
-      const gap = 200; // wider gap between pipes
+      const gap = 200;
       const pipeWidth = 60;
       const speed = 2;
 
@@ -100,14 +126,10 @@
       document.addEventListener('keydown', e => { if (e.code === 'Space') flapBird(); });
       canvas.addEventListener('pointerdown', flapBird);
 
-      function reset(){
-        bird = {x: 50, y: 150, vy: 0};
-        pipes = [];
-        score = 0;
-      }
+      function reset(){ bird = {x: 50, y: 150, vy: 0}; pipes = []; score = 0; }
 
       function spawnPipe(){
-        const top = Math.random() * 200 + 50;
+        const top = Math.random() * 150 + 50;
         pipes.push({x: canvas.width, top: top, bottom: top + gap});
       }
 
@@ -119,13 +141,11 @@
         bird.vy += gravity;
         bird.y += bird.vy;
 
-        // Draw bird
         ctx.fillStyle = '#c084fc';
         ctx.beginPath();
         ctx.arc(bird.x, bird.y, 10, 0, Math.PI*2);
         ctx.fill();
 
-        // Draw pipes
         ctx.fillStyle = '#1c1c28';
         pipes.forEach(p => {
           p.x -= speed;
@@ -139,10 +159,8 @@
         });
         pipes = pipes.filter(p => p.x + pipeWidth > 0);
 
-        // Floor and ceiling collision
         if (bird.y > canvas.height || bird.y < 0) reset();
 
-        // Score
         ctx.fillStyle = '#fff';
         ctx.font = '20px sans-serif';
         ctx.fillText('Score: ' + score, 10, 25);

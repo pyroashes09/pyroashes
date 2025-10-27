@@ -2,35 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>My Games & Links</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>pyroashes.lol — Games & Links</title>
   <meta name="color-scheme" content="dark">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0a0a0f;
-      --panel:#11111a;
-      --panel-2:#0f0f18;
-      --ink:#e8e8ff;
-      --muted:#a6a6c9;
-      --accent:#7c3aed; /* purple-600 */
-      --accent-2:#a78bfa; /* violet-300 */
-      --accent-3:#4c1d95; /* purple-900 */
-      --ok:#22c55e;
-      --warn:#f59e0b;
-      --error:#ef4444;
-      --card:#121225;
-      --glass: rgba(124, 58, 237, 0.08);
+      --bg:#0a0a0f; --panel:#11111a; --panel-2:#0f0f18;
+      --ink:#e8e8ff; --muted:#a6a6c9;
+      --accent:#7c3aed; --accent-2:#a78bfa; --accent-3:#4c1d95;
+      --card:#121225; --glass: rgba(124, 58, 237, 0.08);
       --ring: 0 0 0 2px rgba(124,58,237,.45), 0 0 30px rgba(124,58,237,.25);
-      --radius: 18px;
-      --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
+      --radius: 18px; --shadow: 0 10px 30px rgba(0,0,0,.45), inset 0 0 0 1px rgba(255,255,255,.04);
+      --safe-top: env(safe-area-inset-top); --safe-bottom: env(safe-area-inset-bottom);
     }
-    *{box-sizing:border-box}
+    *{box-sizing:border-box; -webkit-tap-highlight-color: transparent}
     html,body{height:100%}
     body{
-      margin:0;
-      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       color:var(--ink);
       background:
         radial-gradient(1200px 800px at 80% -10%, rgba(124,58,237,.12), transparent 60%),
@@ -39,175 +29,98 @@
       background-color:var(--bg);
     }
 
-    /* Header / Topbar */
+    /* Topbar */
     .topbar{
       position:sticky; top:0; z-index:100;
       display:flex; align-items:center; gap:.75rem;
-      padding:.85rem 1rem;
+      padding: calc(.85rem + var(--safe-top)) 1rem .85rem;
       backdrop-filter: blur(10px);
       background: linear-gradient(180deg, rgba(15,15,25,.75), rgba(15,15,25,.45));
       border-bottom: 1px solid rgba(255,255,255,.06);
     }
-    .brand{
-      display:flex; align-items:center; gap:.65rem; text-decoration:none; color:var(--ink);
-    }
-    .brand .logo{
-      width:36px; height:36px; border-radius:12px;
-      background: radial-gradient(circle at 30% 30%, var(--accent-2), var(--accent));
-      box-shadow: var(--shadow);
-    }
-    .brand h1{
-      font-size:1.05rem; font-weight:800; letter-spacing:.02em; margin:0;
-    }
+    .brand{display:flex; align-items:center; gap:.65rem; text-decoration:none; color:var(--ink)}
+    .brand .logo{width:36px; height:36px; border-radius:12px; background: radial-gradient(circle at 30% 30%, var(--accent-2), var(--accent)); box-shadow:var(--shadow)}
+    .brand h1{font-size:1.05rem; font-weight:800; letter-spacing:.02em; margin:0}
+    .chip{display:inline-flex; align-items:center; gap:.5rem; font-size:.78rem; color: var(--accent-2); padding:.35rem .6rem; border:1px solid rgba(124,58,237,.4); border-radius:999px; background: rgba(124,58,237,.08)}
     .spacer{flex:1}
 
     /* Hamburger */
-    .hamburger{
-      width:44px; height:44px; border:none; border-radius:12px; cursor:pointer;
-      background:linear-gradient(180deg, var(--panel), var(--panel-2));
-      color:var(--ink);
-      display:grid; place-items:center;
-      box-shadow:var(--shadow);
-      transition: transform .2s ease, box-shadow .2s ease;
-    }
+    .hamburger{width:44px; height:44px; border:none; border-radius:12px; cursor:pointer; background:linear-gradient(180deg, var(--panel), var(--panel-2)); color:var(--ink); display:grid; place-items:center; box-shadow:var(--shadow); transition: transform .2s ease, box-shadow .2s ease}
     .hamburger:active{ transform: scale(.98) }
     .hamburger:focus-visible{ outline:none; box-shadow: var(--ring) }
-    .hamburger .bars, .hamburger .bars::before, .hamburger .bars::after{
-      content:""; display:block; width:20px; height:2px; background:var(--ink); border-radius:2px; position:relative;
-      transition: transform .25s ease, opacity .25s ease;
-    }
-    .hamburger .bars::before{ position:absolute; top:-6px; }
-    .hamburger .bars::after{ position:absolute; top:6px; }
+    .hamburger .bars, .hamburger .bars::before, .hamburger .bars::after{content:""; display:block; width:20px; height:2px; background:var(--ink); border-radius:2px; position:relative; transition: transform .25s ease, opacity .25s ease}
+    .hamburger .bars::before{ position:absolute; top:-6px }
+    .hamburger .bars::after{ position:absolute; top:6px }
     .hamburger[aria-pressed="true"] .bars{ transform: rotate(45deg) }
     .hamburger[aria-pressed="true"] .bars::before{ transform: rotate(90deg) translateX(-6px) }
     .hamburger[aria-pressed="true"] .bars::after{ opacity:0 }
 
-    /* Tabs / Panels */
-    .tabs{
-      max-width:1100px; margin: 1.25rem auto; padding: 0 1rem;
-    }
-    .tab-buttons{
-      display:flex; gap:.5rem; margin-bottom: .75rem;
-      align-items:center;
-    }
-    .tab-btn{
-      appearance:none; border:none; cursor:pointer; padding:.65rem .9rem; border-radius:12px;
-      background:linear-gradient(180deg, var(--panel), var(--panel-2));
-      color:var(--muted); font-weight:600; letter-spacing:.02em;
-      box-shadow: var(--shadow);
-      transition: color .2s ease, transform .2s ease, box-shadow .2s ease, background .2s ease;
-    }
-    .tab-btn.active{
-      color:var(--ink);
-      background: linear-gradient(180deg, rgba(124,58,237,.25), rgba(124,58,237,.18));
-      box-shadow: var(--ring);
-    }
+    /* Tabs */
+    .tabs{max-width:1100px; margin: 1.25rem auto; padding: 0 1rem}
+    .tab-buttons{display:flex; gap:.5rem; margin-bottom: .75rem; align-items:center}
+    .tab-btn{appearance:none; border:none; cursor:pointer; padding:.65rem .9rem; border-radius:12px; background:linear-gradient(180deg, var(--panel), var(--panel-2)); color:var(--muted); font-weight:600; letter-spacing:.02em; box-shadow: var(--shadow); transition: color .2s ease, transform .2s ease, box-shadow .2s ease, background .2s ease}
+    .tab-btn.active{color:var(--ink); background: linear-gradient(180deg, rgba(124,58,237,.25), rgba(124,58,237,.18)); box-shadow: var(--ring)}
     .tab-btn:focus-visible{ outline:none; box-shadow: var(--ring) }
-
-    .panel{
-      display:none;
-      background: linear-gradient(180deg, rgba(18,18,37,.9), rgba(14,14,26,.85));
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: var(--radius);
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      animation: fade .25s ease;
-    }
+    .panel{display:none; background: linear-gradient(180deg, rgba(18,18,37,.9), rgba(14,14,26,.85)); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); animation: fade .25s ease}
     .panel.active{ display:block }
+    @keyframes fade{ from{ opacity:0; transform: translateY(6px) } to{ opacity:1; transform: translateY(0) } }
 
-    @keyframes fade{
-      from{ opacity:0; transform: translateY(6px) }
-      to{ opacity:1; transform: translateY(0) }
-    }
+    /* Grid */
+    .grid{display:grid; grid-template-columns: repeat(12, 1fr); gap: 1rem}
+    .col-4{grid-column: span 4} .col-6{grid-column: span 6} .col-8{grid-column: span 8} .col-12{grid-column: span 12}
+    @media (max-width: 900px){ .col-6,.col-8{grid-column: span 12} .col-4{grid-column: span 6} }
+    @media (max-width: 640px){ .grid{gap:.75rem} .col-4{grid-column: span 12} }
 
-    /* Cards grid */
-    .grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 1rem;
-    }
-    .col-4{ grid-column: span 4 }
-    .col-6{ grid-column: span 6 }
-    .col-8{ grid-column: span 8 }
-    .col-12{ grid-column: span 12 }
-
-    @media (max-width: 900px){
-      .col-6, .col-8{ grid-column: span 12 }
-      .col-4{ grid-column: span 6 }
-    }
-    @media (max-width: 640px){
-      .col-4{ grid-column: span 12 }
-    }
-
-    .card{
-      background: linear-gradient(180deg, rgba(18,18,40,.9), rgba(14,14,28,.9));
-      border: 1px solid rgba(255,255,255,.06);
-      border-radius: var(--radius);
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      position:relative; overflow:hidden;
-    }
-    .card::after{
-      content:"";
-      position:absolute; inset:0;
-      background:
-        radial-gradient(400px 120px at 20% -10%, rgba(124,58,237,.12), transparent 60%),
-        radial-gradient(400px 120px at 120% 110%, rgba(168,85,247,.08), transparent 60%);
-      pointer-events:none;
-      mix-blend: screen;
-    }
+    .card{background: linear-gradient(180deg, rgba(18,18,40,.9), rgba(14,14,28,.9)); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding: 1rem; box-shadow: var(--shadow); position:relative; overflow:hidden}
+    .card::after{content:""; position:absolute; inset:0; background: radial-gradient(400px 120px at 20% -10%, rgba(124,58,237,.12), transparent 60%), radial-gradient(400px 120px at 120% 110%, rgba(168,85,247,.08), transparent 60%); pointer-events:none; mix-blend: screen}
     .card h3{ margin:.25rem 0 .5rem; font-size:1rem; letter-spacing:.02em }
     .muted{ color:var(--muted); font-size:.9rem }
 
-    .link-row{
-      display:flex; align-items:center; gap:.75rem; text-decoration:none; color:var(--ink);
-      background: linear-gradient(180deg, rgba(124,58,237,.12), rgba(124,58,237,.08));
-      border: 1px solid rgba(124,58,237,.35);
-      padding:.9rem 1rem; border-radius:14px; box-shadow: var(--shadow);
-      transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
-    }
+    .link-row{display:flex; align-items:center; gap:.75rem; text-decoration:none; color:var(--ink); background: linear-gradient(180deg, rgba(124,58,237,.12), rgba(124,58,237,.08)); border: 1px solid rgba(124,58,237,.35); padding:1rem 1.1rem; border-radius:14px; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .2s ease, background .2s ease}
+    .link-row:active{ transform: translateY(0) }
     .link-row:hover{ transform: translateY(-2px); box-shadow: var(--ring) }
-    .link-icon{
-      width:28px; height:28px; border-radius:9px;
-      display:grid; place-items:center;
-      background: radial-gradient(circle at 30% 30%, var(--accent-2), var(--accent));
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.15);
-      font-weight: 900;
-    }
+    .link-icon{width:28px; height:28px; border-radius:9px; display:grid; place-items:center; background: radial-gradient(circle at 30% 30%, var(--accent-2), var(--accent)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.15); font-weight: 900}
 
-    .btn{
-      appearance:none; border:none; cursor:pointer; border-radius:12px;
-      padding:.65rem .9rem; font-weight:700; letter-spacing:.02em;
-      background: linear-gradient(180deg, var(--accent), var(--accent-3));
-      color:white; box-shadow: var(--shadow);
-      transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
-    }
-    .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); box-shadow: var(--ring) }
+    .btn{appearance:none; border:none; cursor:pointer; border-radius:12px; padding:.7rem 1rem; font-weight:700; letter-spacing:.02em; background: linear-gradient(180deg, var(--accent), var(--accent-3)); color:white; box-shadow: var(--shadow); transition: transform .15s ease, box-shadow .2s ease, filter .2s ease}
+    .btn:active{ transform: translateY(0) } .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); box-shadow: var(--ring) }
     .btn:focus-visible{ outline:none; box-shadow: var(--ring) }
 
-    .chip{
-      display:inline-flex; align-items:center; gap:.5rem; font-size:.78rem; color: var(--accent-2);
-      padding:.35rem .6rem; border:1px solid rgba(124,58,237,.4); border-radius:999px;
-      background: rgba(124,58,237,.08);
+    /* Game wrappers + mobile sizing */
+    .game-wrap{ background: radial-gradient(800px 300px at 50% -10%, rgba(124,58,237,.18), transparent 60%), #0b0b17; border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:.5rem; box-shadow: var(--shadow) }
+    canvas.resp-canvas{ width:100%; height:480px; display:block; background:#0e0e18; border-radius:10px }
+    @media (max-width: 640px){
+      canvas.resp-canvas{ height: min(64vh, 520px) }
     }
 
-    /* Flappy Bird canvas wrapper */
-    .game-wrap{
-      background: radial-gradient(800px 300px at 50% -10%, rgba(124,58,237,.18), transparent 60%), #0b0b17;
-      border:1px solid rgba(255,255,255,.06);
-      border-radius:14px; padding: .5rem;
-      box-shadow: var(--shadow);
-    }
-    canvas#flappy{ width:100%; height:420px; display:block; background:#0e0e18; border-radius:10px }
+    .controls{display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.6rem}
+    .controls .btn{ flex:1; min-width: 100px; padding:.9rem 1rem }
+    .controls .btn.small{ flex:unset; min-width:auto; padding:.55rem .7rem; font-size:.9rem }
 
-    .footer{
-      opacity:.7; font-size:.8rem; text-align:center; padding:1.2rem 1rem 2rem;
+    /* Minesweeper */
+    .mine-grid{ display:grid; gap:4px; user-select:none; touch-action: manipulation }
+    .mine-cell{
+      width:100%; aspect-ratio:1/1; display:grid; place-items:center; border-radius:10px;
+      background: linear-gradient(180deg, #141427, #101020); border:1px solid rgba(255,255,255,.06);
+      font-weight:800; letter-spacing:.02em; font-size:1rem; color:#d7d7ff; box-shadow:var(--shadow)
     }
+    .mine-cell.revealed{ background: linear-gradient(180deg, #181833, #131328); color:#dfe0ff; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06) }
+    .mine-cell.flag{ color:#fca5a5; }
+    .mine-bar{ display:flex; align-items:center; justify-content:space-between; gap:.75rem; margin-bottom:.6rem; flex-wrap:wrap}
+    .mine-info{ background: rgba(124,58,237,.12); border:1px solid rgba(124,58,237,.35); padding:.5rem .7rem; border-radius:10px; font-weight:700 }
+
+    /* Tetris */
+    .tetris-wrap{ position:relative }
+    .t-ui{ display:flex; gap:.5rem; flex-wrap:wrap; margin-top:.6rem }
+    .t-ui .btn{ flex:1; min-width: 72px }
+    .t-linemsg{ font-size:.9rem; color:var(--muted); margin-top:.4rem }
+
+    .footer{ opacity:.7; font-size:.8rem; text-align:center; padding:1.2rem 1rem calc(1.2rem + var(--safe-bottom)) }
     a{ color:var(--accent-2) }
+    .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0 }
 
-    /* Accessibility helpers */
-    .sr-only{
-      position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0;
+    /* Reduce motion preference */
+    @media (prefers-reduced-motion: reduce){
+      *{ animation: none !important; transition: none !important; scroll-behavior: auto !important }
     }
   </style>
 </head>
@@ -215,7 +128,7 @@
   <header class="topbar" role="banner">
     <a class="brand" href="#" aria-label="Home">
       <span class="logo" aria-hidden="true"></span>
-      <h1>My Portal</h1>
+      <h1>pyroashes.lol</h1>
       <span class="chip">Dark · Purple</span>
     </a>
     <div class="spacer"></div>
@@ -225,49 +138,68 @@
   </header>
 
   <main class="tabs" id="panels">
-    <!-- Tab Buttons (visually subtle; hamburger is primary toggle) -->
     <div class="tab-buttons" aria-hidden="true">
       <button class="tab-btn active" data-tab="games">Games</button>
       <button class="tab-btn" data-tab="links">Links</button>
     </div>
 
-    <!-- GAMES PANEL (default active) -->
+    <!-- GAMES -->
     <section id="panel-games" class="panel active" role="region" aria-label="Games">
       <div class="grid">
-        <div class="card col-8">
-          <h3>Flappy Bird <span class="muted">· click / space / tap to flap</span></h3>
+        <!-- Flappy -->
+        <div class="card col-12">
+          <h3>Flappy Bird <span class="muted">· tap / click / space to flap</span></h3>
           <div class="game-wrap">
-            <canvas id="flappy" width="720" height="420" aria-label="Flappy Bird canvas game"></canvas>
+            <canvas id="flappy" class="resp-canvas" width="720" height="480" aria-label="Flappy Bird"></canvas>
           </div>
-          <p class="muted" style="margin-top:.6rem">
-            Score: <strong id="score">0</strong> &nbsp;|&nbsp; Best: <strong id="best">0</strong>
-            <span class="muted"> — press <kbd>R</kbd> to restart</span>
-          </p>
+          <div class="controls">
+            <button class="btn" id="flappy-start">Start / Restart</button>
+            <button class="btn small" id="flappy-pause">Pause</button>
+            <span class="mine-info">Score: <strong id="score">0</strong> · Best: <strong id="best">0</strong></span>
+          </div>
         </div>
 
-        <div class="card col-4">
-          <h3>Minesweeper <span class="muted">· coming soon</span></h3>
-          <p class="muted">A sleek minesweeper will appear here. The layout & styles are ready—drop in a grid and basic logic when you’re ready.</p>
-          <button class="btn" disabled aria-disabled="true">Coming soon</button>
+        <!-- Minesweeper -->
+        <div class="card col-12">
+          <h3>Minesweeper <span class="muted">· tap to reveal · long-press to flag</span></h3>
+          <div class="mine-bar">
+            <div class="mine-info">Mines: <strong id="ms-mines">10</strong></div>
+            <div class="mine-info">Flags: <strong id="ms-flags">0</strong></div>
+            <div class="mine-info">Time: <strong id="ms-time">0</strong>s</div>
+            <div style="flex:1"></div>
+            <div class="controls" style="margin:0">
+              <button class="btn" id="ms-reset">New Game</button>
+              <button class="btn small" id="ms-easy">Easy</button>
+              <button class="btn small" id="ms-med">Medium</button>
+              <button class="btn small" id="ms-hard">Hard</button>
+            </div>
+          </div>
+          <div id="ms-grid" class="mine-grid" aria-label="Minesweeper grid"></div>
         </div>
 
-        <div class="card col-4">
-          <h3>Tetris <span class="muted">· coming soon</span></h3>
-          <p class="muted">Classic falling blocks. The card and placement are set—just wire in a canvas game or embed later.</p>
-          <button class="btn" disabled aria-disabled="true">Coming soon</button>
-        </div>
-
-        <div class="card col-8">
-          <h3>About the Games Area</h3>
-          <p class="muted">This section boots first. Use the hamburger in the top-right to flip between <strong>Games</strong> and your <strong>Links</strong>. The visual theme uses deep blacks with purple accents and soft neon glows.</p>
+        <!-- Tetris -->
+        <div class="card col-12">
+          <h3>Tetris <span class="muted">· buttons or arrow keys · Z/X rotate</span></h3>
+          <div class="game-wrap tetris-wrap">
+            <canvas id="tetris" class="resp-canvas" width="300" height="600" aria-label="Tetris"></canvas>
+          </div>
+          <div class="t-ui">
+            <button class="btn" id="t-left">◀︎ Left</button>
+            <button class="btn" id="t-rotateL">⟲ Rotate</button>
+            <button class="btn" id="t-rotateR">⟳ Rotate</button>
+            <button class="btn" id="t-right">Right ▶︎</button>
+            <button class="btn" id="t-drop">⬇︎ Soft Drop</button>
+            <button class="btn" id="t-start">Start / Restart</button>
+          </div>
+          <div class="t-linemsg">Score: <strong id="t-score">0</strong> · Lines: <strong id="t-lines">0</strong> · Level: <strong id="t-level">1</strong></div>
         </div>
       </div>
     </section>
 
-    <!-- LINKS PANEL -->
+    <!-- LINKS -->
     <section id="panel-links" class="panel" role="region" aria-label="Links">
       <div class="grid">
-        <div class="card col-6">
+        <div class="card col-12">
           <h3>Your Profiles</h3>
           <a class="link-row" href="#" target="_blank" rel="noopener">
             <span class="link-icon" aria-hidden="true">D</span>
@@ -292,30 +224,18 @@
               <div class="muted">My Steam profile & games</div>
             </div>
           </a>
-          <p class="muted" style="margin-top:.9rem">
-            Tip: update the three <code>href="#"</code> attributes above with your real URLs.
-          </p>
-        </div>
-
-        <div class="card col-6">
-          <h3>About This Site</h3>
-          <p class="muted">Single-file HTML (no build tools). Accessible, keyboard friendly, responsive layout. If you later add more games, duplicate the card styles for a consistent look.</p>
-          <ul class="muted" style="margin:.5rem 0 0 1rem">
-            <li>Lightweight—no external JS frameworks</li>
-            <li>Keyboard: <kbd>H</kbd> toggles sections</li>
-            <li>Remembers your best Flappy score</li>
-          </ul>
+          <p class="muted" style="margin-top:.9rem">Swap the three <code>href="#"</code> values with your real links.</p>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="footer">
-    <span class="muted">© <span id="year"></span> · Built with ❤️ and a purple glow.</span>
+    <span class="muted">© <span id="year"></span> · pyroashes.lol</span>
   </footer>
 
   <script>
-  // ===== Basic Tab / Hamburger Logic =====
+  /* ===== Global UI: tabs / hamburger ===== */
   const btns = Array.from(document.querySelectorAll('.tab-btn'));
   const hamburger = document.getElementById('hamburger');
   const panelGames = document.getElementById('panel-games');
@@ -327,157 +247,109 @@
     panelLinks.classList.toggle('active', !isGames);
     btns.forEach(b=> b.classList.toggle('active', b.dataset.tab === tab));
     hamburger.setAttribute('aria-pressed', (!isGames).toString());
+    // Scroll to top of active panel on mobile for better UX
+    if (matchMedia('(max-width: 640px)').matches) window.scrollTo({top:0, behavior:'smooth'});
   }
-
-  // Default to games on load
   setActive('games');
-
   btns.forEach(b => b.addEventListener('click', () => setActive(b.dataset.tab)));
   hamburger.addEventListener('click', () => {
     const showingGames = panelGames.classList.contains('active');
     setActive(showingGames ? 'links' : 'games');
   });
-
-  // Keyboard shortcuts
-  addEventListener('keydown', (e) => {
-    if (e.key.toLowerCase() === 'h'){
-      hamburger.click();
-    }
-  });
-
-  // Footer year
+  addEventListener('keydown', (e) => { if (e.key.toLowerCase() === 'h'){ hamburger.click(); } });
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // ===== Mini Flappy Bird (canvas) =====
+  /* ===== Utility: prevent scroll on long-press canvas touches (mobile) ===== */
+  function lockTouch(el){
+    el.addEventListener('touchmove', e => { e.preventDefault(); }, {passive:false});
+  }
+
+  /* ===== Flappy Bird ===== */
   ;(function(){
     const c = document.getElementById('flappy');
-    const ctx = c.getContext('2d');
+    const ctx = c.getContext('2d', { alpha: false });
     const scoreEl = document.getElementById('score');
     const bestEl = document.getElementById('best');
 
-    const W = c.width, H = c.height;
+    let W = c.width, H = c.height;
+    function resizeCanvas(){
+      // Keep internal resolution matching CSS to keep it sharp on mobile DPR
+      const rect = c.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      c.width = Math.floor(rect.width * dpr);
+      c.height = Math.floor(rect.height * dpr);
+      W = c.width; H = c.height;
+      ctx.setTransform(dpr,0,0,dpr,0,0); // scale drawing
+    }
+    const ro = new ResizeObserver(resizeCanvas); ro.observe(c);
+    resizeCanvas(); lockTouch(c);
 
-    let running = false, gameOver = false, score = 0, best = +localStorage.getItem('flappy_best_v1') || 0;
+    let running=false, gameOver=false, score=0, best=+localStorage.getItem('flappy_best_v2')||0;
     bestEl.textContent = best;
 
-    // Bird
-    const bird = { x: W*0.25, y: H*0.5, r: 16, vy: 0 };
-    const G = 0.5;          // gravity
-    const FLAP = -8.5;      // upward impulse
-    const MAX_FALL = 12;
-
-    // Pipes
-    const pipes = [];
-    const GAP = 140;
-    const PIPE_W = 64;
-    const PIPE_SPACING = 200; // px between pipes horizontally
-    let spawnTimer = 0;
-
-    const skyGrad = ctx.createLinearGradient(0,0,0,H);
-    skyGrad.addColorStop(0, '#0b0b18');
-    skyGrad.addColorStop(1, '#070712');
+    const bird = { x: 160, y: 160, r: 12, vy: 0 };
+    const G = 0.45, FLAP = -8.5, MAX_FALL=12;
+    const pipes = []; const GAP=140; const PIPE_W=64; let spawn=0;
 
     function reset(){
-      running = false; gameOver = false; score = 0;
-      bird.y = H*0.45; bird.vy = 0;
-      pipes.length = 0;
-      spawnTimer = 0;
-      scoreEl.textContent = score;
+      running=false; gameOver=false; score=0;
+      bird.x = Math.max(140, W*0.25); bird.y = H*0.45; bird.vy = 0;
+      pipes.length=0; spawn=0; scoreEl.textContent=score;
     }
-
     function spawnPipe(){
       const margin = 50;
       const topH = Math.random()*(H - GAP - margin*2) + margin;
-      pipes.push({
-        x: W + PIPE_W,
-        top: topH,
-        bottom: topH + GAP,
-        passed: false
-      });
+      pipes.push({ x: W + PIPE_W, top: topH, bottom: topH + GAP, passed:false });
     }
-
     function flap(){
-      if (!running && !gameOver){
-        running = true;
-      }
-      if (gameOver){
-        reset(); running = true;
-      }
+      if (!running && !gameOver) running = true;
+      if (gameOver){ reset(); running=true; }
       bird.vy = FLAP;
     }
 
-    // Controls
     c.addEventListener('mousedown', flap);
     c.addEventListener('touchstart', (e)=>{ e.preventDefault(); flap(); }, {passive:false});
-    addEventListener('keydown', (e)=>{
-      if (e.key === ' '){ e.preventDefault(); flap(); }
-      if (e.key.toLowerCase() === 'r'){ reset(); running = true; }
-    });
+    document.getElementById('flappy-start').addEventListener('click', ()=>{ reset(); running=true; });
+    let paused=false;
+    document.getElementById('flappy-pause').addEventListener('click', ()=> paused=!paused );
+    addEventListener('keydown', (e)=>{ if(e.key===' '){ e.preventDefault(); flap(); } });
 
-    function drawBackground(){
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0,0,W,H);
+    const skyGrad = ctx.createLinearGradient(0,0,0,H);
+    skyGrad.addColorStop(0, '#0b0b18'); skyGrad.addColorStop(1, '#070712');
 
-      // Subtle stars
-      ctx.globalAlpha = .25;
+    function drawBG(){
+      ctx.fillStyle=skyGrad; ctx.fillRect(0,0,W,H);
+      ctx.globalAlpha=.25;
       for (let i=0;i<60;i++){
-        const x = (i*113) % W;
-        const y = (i*71) % H;
-        ctx.fillStyle = i%2 ? '#7c3aed' : '#a78bfa';
-        ctx.fillRect(x, y, 2, 2);
+        const x = (i*113) % (W/1); const y = (i*71) % (H/1);
+        ctx.fillStyle = i%2 ? '#7c3aed' : '#a78bfa'; ctx.fillRect(x,y,2,2);
       }
-      ctx.globalAlpha = 1;
+      ctx.globalAlpha=1;
     }
+    function rr(ctx,x,y,w,h,r,fill=true,stroke=false){ if (w<2*r) r=w/2; if(h<2*r) r=h/2; ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); if(fill)ctx.fill(); if(stroke)ctx.stroke(); }
 
     function drawBird(){
-      ctx.save();
-      ctx.translate(bird.x, bird.y);
-      const angle = Math.max(-0.5, Math.min(0.7, bird.vy/10));
-      ctx.rotate(angle);
-
-      // Body
-      const grad = ctx.createLinearGradient(-bird.r, -bird.r, bird.r, bird.r);
-      grad.addColorStop(0, '#a78bfa'); grad.addColorStop(1, '#7c3aed');
-      ctx.fillStyle = grad;
-      roundRect(ctx, -bird.r, -bird.r, bird.r*2, bird.r*2, 10, true);
-
-      // Eye
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(6, -4, 5, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = '#0b0b12';
-      ctx.beginPath(); ctx.arc(7, -4, 2.5, 0, Math.PI*2); ctx.fill();
-
-      // Wing
-      ctx.fillStyle = 'rgba(255,255,255,.25)';
-      roundRect(ctx, -8, 4, 16, 10, 5, true);
-
+      ctx.save(); ctx.translate(bird.x, bird.y); const angle = Math.max(-0.5, Math.min(0.7, bird.vy/10)); ctx.rotate(angle);
+      const grad = ctx.createLinearGradient(-bird.r,-bird.r,bird.r,bird.r); grad.addColorStop(0,'#a78bfa'); grad.addColorStop(1,'#7c3aed'); ctx.fillStyle = grad;
+      rr(ctx,-bird.r,-bird.r,bird.r*2,bird.r*2,10,true);
+      ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(6,-4,5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#0b0b12'; ctx.beginPath(); ctx.arc(7,-4,2.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,.25)'; rr(ctx,-8,4,16,10,5,true);
       ctx.restore();
     }
-
     function drawPipes(){
       for (const p of pipes){
-        // Top pipe
-        ctx.fillStyle = 'rgba(167,139,250,.9)';
-        roundRect(ctx, p.x, 0, PIPE_W, p.top, 10, true);
-        // Bottom pipe
-        ctx.fillStyle = 'rgba(124,58,237,.95)';
-        roundRect(ctx, p.x, p.bottom, PIPE_W, H - p.bottom, 10, true);
-        // Glow rims
-        ctx.strokeStyle = 'rgba(255,255,255,.12)';
-        ctx.lineWidth = 2;
-        roundRect(ctx, p.x+1, 1, PIPE_W-2, p.top-2, 9, false, true);
-        roundRect(ctx, p.x+1, p.bottom+1, PIPE_W-2, H - p.bottom - 2, 9, false, true);
+        ctx.fillStyle='rgba(167,139,250,.9)'; rr(ctx,p.x,0,PIPE_W,p.top,10,true);
+        ctx.fillStyle='rgba(124,58,237,.95)'; rr(ctx,p.x,p.bottom,PIPE_W,H-p.bottom,10,true);
+        ctx.strokeStyle='rgba(255,255,255,.12)'; ctx.lineWidth=2;
+        rr(ctx,p.x+1,1,PIPE_W-2,p.top-2,9,false,true);
+        rr(ctx,p.x+1,p.bottom+1,PIPE_W-2,H-p.bottom-2,9,false,true);
       }
     }
-
-    function drawHUD(){
-      ctx.fillStyle = 'rgba(0,0,0,.35)';
-      roundRect(ctx, W-150, 14, 136, 36, 10, true);
-      ctx.fillStyle = '#eaeaff';
-      ctx.font = '700 18px Inter, sans-serif';
-      ctx.fillText('Score: ' + score, W-140, 38);
+    function hud(){
+      ctx.fillStyle = 'rgba(0,0,0,.35)'; rr(ctx, W-160, 14, 146, 36, 10, true);
+      ctx.fillStyle='#eaeaff'; ctx.font='700 18px Inter, sans-serif'; ctx.fillText('Score: '+score, W-150, 38);
     }
-
     function collide(){
       if (bird.y + bird.r >= H || bird.y - bird.r <= 0) return true;
       for (const p of pipes){
@@ -488,80 +360,335 @@
       return false;
     }
 
-    function update(){
-      drawBackground();
-
-      if (running){
-        // Physics
-        bird.vy = Math.min(MAX_FALL, bird.vy + G);
-        bird.y += bird.vy;
-
-        // Pipes
-        spawnTimer -= 1;
-        if (spawnTimer <= 0){
-          spawnPipe();
-          spawnTimer = PIPE_SPACING / 2; // Adjust spawn rate
+    function loop(){
+      drawBG();
+      if (!paused){
+        if (running){
+          bird.vy = Math.min(MAX_FALL, bird.vy + G); bird.y += bird.vy;
+          spawn -= 1; if (spawn<=0){ spawnPipe(); spawn = (PIPE_W + 140); }
+          for (const p of pipes){ p.x -= 2.4; if (!p.passed && p.x + PIPE_W < bird.x){ p.passed=true; score++; scoreEl.textContent=score; } }
+          while (pipes.length && pipes[0].x + PIPE_W < -10) pipes.shift();
+          if (collide()){ running=false; gameOver=true; const best = Math.max(+localStorage.getItem('flappy_best_v2')||0, score); localStorage.setItem('flappy_best_v2', best); bestEl.textContent=best; }
         }
-        for (const p of pipes){
-          p.x -= 2.5; // pipe speed
-          if (!p.passed && p.x + PIPE_W < bird.x){
-            p.passed = true;
-            score++;
-            scoreEl.textContent = score;
+      }
+      drawPipes(); drawBird(); hud();
+      if (!running){
+        ctx.fillStyle='rgba(10,10,15,.65)'; rr(ctx, W/2-160, H/2-90, 320, 180, 16, true);
+        ctx.textAlign='center'; ctx.fillStyle='#eaeaff'; ctx.font='800 28px Inter, sans-serif';
+        ctx.fillText(gameOver ? 'Game Over' : 'Flap to Start', W/2, H/2-20);
+        ctx.font='600 14px Inter, sans-serif'; ctx.fillStyle='rgba(220,220,255,.85)';
+        ctx.fillText(gameOver ? 'Tap Start or press Space' : 'Tap/Click/Space to flap', W/2, H/2+10); ctx.textAlign='start';
+      }
+      requestAnimationFrame(loop);
+    }
+    reset(); for (let i=0;i<3;i++) pipes.push({x: 260 + i*200, top: 60 + i*15, bottom: 60 + i*15 + GAP, passed:false});
+    loop();
+  })();
+
+  /* ===== Minesweeper ===== */
+  ;(function(){
+    const gridEl = document.getElementById('ms-grid');
+    const minesEl = document.getElementById('ms-mines');
+    const flagsEl = document.getElementById('ms-flags');
+    const timeEl  = document.getElementById('ms-time');
+    const btnReset= document.getElementById('ms-reset');
+    const btnE=document.getElementById('ms-easy'), btnM=document.getElementById('ms-med'), btnH=document.getElementById('ms-hard');
+
+    let rows=9, cols=9, mines=10;
+    let grid=[], started=false, timer=null, time=0, flags=0, remainingMines=mines;
+
+    function idx(r,c){ return r*cols+c }
+    function inb(r,c){ return r>=0 && r<rows && c>=0 && c<cols }
+
+    function layout(){
+      // Responsive cell size
+      const cellPx = Math.max(28, Math.floor(gridEl.clientWidth / Math.min(12, cols)) - 2);
+      gridEl.style.gridTemplateColumns = `repeat(${cols}, minmax(${cellPx}px, 1fr))`;
+    }
+    new ResizeObserver(layout).observe(gridEl);
+
+    function init(){
+      grid=[]; time=0; flags=0; started=false; remainingMines=mines;
+      timeEl.textContent='0'; flagsEl.textContent='0'; minesEl.textContent=String(mines);
+      clearInterval(timer);
+      gridEl.innerHTML='';
+      for (let r=0;r<rows;r++){
+        for (let c=0;c<cols;c++){
+          grid.push({r,c, mine:false, n:0, revealed:false, flag:false, el:null});
+        }
+      }
+      // place mines randomly
+      let placed=0;
+      while (placed<mines){
+        const i = Math.floor(Math.random()*grid.length);
+        if (!grid[i].mine){ grid[i].mine=true; placed++; }
+      }
+      // counts
+      for (const cell of grid){
+        if (cell.mine){ cell.n = -1; continue; }
+        let ct=0;
+        for (let dr=-1; dr<=1; dr++){
+          for (let dc=-1; dc<=1; dc++){
+            if (!dr && !dc) continue;
+            const rr=cell.r+dr, cc=cell.c+dc;
+            if (inb(rr,cc) && grid[idx(rr,cc)].mine) ct++;
           }
         }
-        // Remove off-screen
-        while (pipes.length && pipes[0].x + PIPE_W < -10){
-          pipes.shift();
-        }
-
-        if (collide()){
-          gameOver = true; running = false;
-          best = Math.max(best, score);
-          localStorage.setItem('flappy_best_v1', best);
-          bestEl.textContent = best;
-        }
+        cell.n = ct;
       }
 
-      // Draw
-      drawPipes();
-      drawBird();
-      drawHUD();
-
-      if (!running){
-        ctx.fillStyle = 'rgba(10,10,15,.65)';
-        roundRect(ctx, W/2 - 160, H/2 - 90, 320, 180, 16, true);
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#eaeaff';
-        ctx.font = '800 28px Inter, sans-serif';
-        ctx.fillText(gameOver ? 'Game Over' : 'Flap to Start', W/2, H/2 - 20);
-        ctx.font = '600 14px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(220,220,255,.85)';
-        ctx.fillText(gameOver ? 'Press R to retry · Space/Click to flap' : 'Space/Click/Tap to flap', W/2, H/2 + 10);
-        ctx.textAlign = 'start';
+      // draw
+      for (const cell of grid){
+        const d = document.createElement('button');
+        d.className='mine-cell'; d.setAttribute('aria-label', `cell ${cell.r+1}-${cell.c+1}`);
+        d.addEventListener('contextmenu', e=>e.preventDefault());
+        let pressTimer;
+        function longPress(){ toggleFlag(cell) }
+        d.addEventListener('touchstart', e=>{ pressTimer=setTimeout(longPress, 350) }, {passive:true});
+        d.addEventListener('touchend', e=>{ clearTimeout(pressTimer) }, {passive:true});
+        d.addEventListener('mousedown', e=>{
+          if (e.button===2) { toggleFlag(cell); return; } // right-click
+        });
+        d.addEventListener('click', ()=> reveal(cell, true));
+        cell.el = d; gridEl.appendChild(d);
       }
+      layout();
+    }
 
+    function startTimer(){
+      if (started) return;
+      started=true; timer=setInterval(()=>{ time++; timeEl.textContent=String(time) }, 1000);
+    }
+    function stopTimer(){ clearInterval(timer) }
+
+    function toggleFlag(cell){
+      if (cell.revealed) return;
+      if (!cell.flag && flags>=mines) return;
+      cell.flag = !cell.flag;
+      flags += cell.flag ? 1 : -1;
+      remainingMines = mines - flags;
+      flagsEl.textContent = String(flags); minesEl.textContent = String(remainingMines);
+      cell.el.classList.toggle('flag', cell.flag);
+      cell.el.textContent = cell.flag ? '⚑' : '';
+      checkWin();
+    }
+
+    function reveal(cell, user=false){
+      if (cell.revealed || cell.flag) return;
+      if (user) startTimer();
+      cell.revealed=true;
+      cell.el.classList.add('revealed');
+      if (cell.mine){
+        cell.el.textContent='💥';
+        end(false);
+        return;
+      }
+      if (cell.n>0){
+        const colors=['','#93c5fd','#86efac','#fde68a','#fca5a5','#c4b5fd','#67e8f9','#d8b4fe','#fef08a'];
+        cell.el.textContent=cell.n; cell.el.style.color = colors[cell.n] || '#e5e7eb';
+      }else{
+        // flood
+        for (let dr=-1; dr<=1; dr++){
+          for (let dc=-1; dc<=1; dc++){
+            if (!dr && !dc) continue;
+            const rr=cell.r+dr, cc=cell.c+dc;
+            if (inb(rr,cc)) reveal(grid[idx(rr,cc)]);
+          }
+        }
+      }
+      checkWin();
+    }
+
+    function revealAllMines(){
+      for (const cell of grid){
+        if (cell.mine){ cell.el.textContent='💣'; cell.el.classList.add('revealed'); }
+      }
+    }
+
+    function end(win){
+      stopTimer();
+      for (const cell of grid){ cell.el.disabled = true }
+      if (!win) revealAllMines();
+      // small toast
+      const t=document.createElement('div');
+      t.textContent = win ? 'You win!' : 'Boom! Game over';
+      t.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);padding:.6rem 1rem;border-radius:12px;background:rgba(124,58,237,.25);border:1px solid rgba(124,58,237,.45);backdrop-filter:blur(4px);box-shadow:var(--ring);z-index:2000';
+      document.body.appendChild(t); setTimeout(()=>t.remove(),1500);
+    }
+
+    function checkWin(){
+      let unrevealed=0;
+      for (const cell of grid){ if (!cell.revealed && !cell.mine) unrevealed++; }
+      if (unrevealed===0){
+        end(true);
+      }
+    }
+
+    function setDifficulty(r,c,m){
+      rows=r; cols=c; mines=m; init();
+    }
+
+    btnReset.addEventListener('click', init);
+    btnE.addEventListener('click', ()=>setDifficulty(9,9,10));
+    btnM.addEventListener('click', ()=>setDifficulty(16,16,40));
+    btnH.addEventListener('click', ()=>setDifficulty(16,30,99));
+
+    init();
+  })();
+
+  /* ===== Tetris ===== */
+  ;(function(){
+    const c = document.getElementById('tetris');
+    const ctx = c.getContext('2d', { alpha: false });
+    lockTouch(c);
+
+    let W=c.width, H=c.height, COLS=10, ROWS=20, SIZE=Math.floor(W/COLS);
+    function resize(){
+      const rect=c.getBoundingClientRect(); const dpr=Math.min(devicePixelRatio||1,2);
+      c.width=Math.floor(rect.width*dpr); c.height=Math.floor(rect.height*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      W=rect.width; H=rect.height; SIZE=Math.floor(W/COLS);
+    }
+    new ResizeObserver(resize).observe(c); resize();
+
+    const SCORE=document.getElementById('t-score');
+    const LINES=document.getElementById('t-lines');
+    const LEVEL=document.getElementById('t-level');
+
+    const empty = ()=>Array.from({length:ROWS},()=>Array(COLS).fill(0));
+    let grid = empty();
+
+    const pieces = {
+      I: [[1,1,1,1]],
+      O: [[1,1],[1,1]],
+      T: [[0,1,0],[1,1,1]],
+      S: [[0,1,1],[1,1,0]],
+      Z: [[1,1,0],[0,1,1]],
+      J: [[1,0,0],[1,1,1]],
+      L: [[0,0,1],[1,1,1]],
+    };
+    const colors = {1:'#a78bfa', 2:'#7c3aed', 3:'#c084fc', 4:'#8b5cf6', 5:'#ddd6fe', 6:'#a3a3f9',7:'#bdb4ff'};
+
+    function rndPiece(){
+      const keys = Object.keys(pieces);
+      const k = keys[Math.floor(Math.random()*keys.length)];
+      return { m: pieces[k].map(r=>r.slice()), x: Math.floor(COLS/2)-2, y: -1, k };
+    }
+    let cur = rndPiece();
+
+    function rotate(m, dir=1){
+      const rows=m.length, cols=m[0].length;
+      const out=Array.from({length:cols},()=>Array(rows).fill(0));
+      for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) out[c][dir>0?rows-1-r:r]=m[r][c];
+      return out;
+    }
+
+    function collide(nx=cur.x, ny=cur.y, nm=cur.m){
+      for(let r=0;r<nm.length;r++)
+        for(let c=0;c<nm[0].length;c++)
+          if(nm[r][c]){
+            const x=nx+c, y=ny+r;
+            if (x<0||x>=COLS||y>=ROWS) return true;
+            if (y>=0 && grid[y][x]) return true;
+          }
+      return false;
+    }
+
+    function merge(){
+      for(let r=0;r<cur.m.length;r++)
+        for(let c=0;c<cur.m[0].length;c++)
+          if(cur.m[r][c] && cur.y+r>=0)
+            grid[cur.y+r][cur.x+c] = 1;
+    }
+
+    function clearLines(){
+      let lines=0;
+      grid = grid.filter(row => !row.every(v=>v!==0));
+      lines = ROWS - grid.length;
+      while(grid.length<ROWS) grid.unshift(Array(COLS).fill(0));
+      return lines;
+    }
+
+    function drawCell(x,y,fill){
+      ctx.fillStyle=fill;
+      ctx.fillRect(x*SIZE,y*SIZE,SIZE-1,SIZE-1);
+    }
+
+    function draw(){
+      ctx.fillStyle='#0e0e18'; ctx.fillRect(0,0,W,H);
+      // settled
+      for(let r=0;r<ROWS;r++) for(let c=0;c<COLS;c++) if(grid[r][c]) drawCell(c,r,colors[(r+c)%7+1]);
+      // current
+      for(let r=0;r<cur.m.length;r++) for(let c=0;c<cur.m[0].length;c++) if(cur.m[r][c] && cur.y+r>=0) drawCell(cur.x+c,cur.y+r,'#a78bfa');
+      // gridlines subtle
+      ctx.globalAlpha=.08; ctx.strokeStyle='#a78bfa'; for(let i=0;i<=COLS;i++){ ctx.beginPath(); ctx.moveTo(i*SIZE,0); ctx.lineTo(i*SIZE,ROWS*SIZE); ctx.stroke(); }
+      ctx.globalAlpha=1;
+    }
+
+    let dropCounter=0, dropInterval=700, last=0, score=0, lines=0, level=1, running=false, gameOver=false;
+
+    function reset(){
+      grid=empty(); cur=rndPiece(); score=0; lines=0; level=1; dropInterval=700; running=false; gameOver=false;
+      SCORE.textContent='0'; LINES.textContent='0'; LEVEL.textContent='1';
+    }
+
+    function update(ts=0){
+      if (!running){ draw(); requestAnimationFrame(update); return; }
+      const dt = ts - last; last = ts;
+      dropCounter += dt;
+      if (dropCounter > dropInterval){
+        dropCounter = 0;
+        if (!collide(cur.x, cur.y+1)){ cur.y++; }
+        else{
+          merge();
+          const cleared = clearLines();
+          if (cleared){
+            lines += cleared; LINES.textContent = String(lines);
+            score += cleared===4 ? 800 : cleared*100; SCORE.textContent=String(score);
+            level = 1 + Math.floor(lines/10); LEVEL.textContent=String(level);
+            dropInterval = Math.max(120, 700 - (level-1)*50);
+          }
+          cur = rndPiece();
+          if (collide(cur.x, cur.y, cur.m)){ running=false; gameOver=true; toast('Game Over'); }
+        }
+      }
+      draw();
       requestAnimationFrame(update);
     }
 
-    function roundRect(ctx, x, y, w, h, r, fill = false, stroke = false){
-      if (w < 2*r) r = w/2; if (h < 2*r) r = h/2;
-      ctx.beginPath();
-      ctx.moveTo(x+r, y);
-      ctx.arcTo(x+w, y, x+w, y+h, r);
-      ctx.arcTo(x+w, y+h, x, y+h, r);
-      ctx.arcTo(x, y+h, x, y, r);
-      ctx.arcTo(x, y, x+w, y, r);
-      ctx.closePath();
-      if (fill) ctx.fill();
-      if (stroke) ctx.stroke();
+    function toast(msg){
+      const t=document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText='position:fixed;left:50%;top:20px;transform:translateX(-50%);padding:.6rem 1rem;border-radius:12px;background:rgba(124,58,237,.25);border:1px solid rgba(124,58,237,.45);backdrop-filter:blur(4px);box-shadow:var(--ring);z-index:2000';
+      document.body.appendChild(t); setTimeout(()=>t.remove(),1500);
     }
 
-    reset();
-    // Seed some pipes before start for visual depth
-    for (let i=0;i<3;i++){
-      pipes.push({ x: W + i*200 + 120, top: 60 + i*15, bottom: 60 + i*15 + GAP, passed:false });
-    }
+    function start(){ reset(); running=true; }
+
+    // Controls
+    function move(dx){ if (!running) return; if (!collide(cur.x+dx,cur.y)) cur.x+=dx; draw(); }
+    function rotLeft(){ if (!running) return; const nm=rotate(cur.m,-1); if (!collide(cur.x,cur.y,nm)) cur.m=nm; draw(); }
+    function rotRight(){ if (!running) return; const nm=rotate(cur.m,1); if (!collide(cur.x,cur.y,nm)) cur.m=nm; draw(); }
+    function softDrop(){ if (!running) return; if (!collide(cur.x,cur.y+1)) cur.y++; draw(); }
+
+    document.getElementById('t-left').onclick = ()=>move(-1);
+    document.getElementById('t-right').onclick= ()=>move(1);
+    document.getElementById('t-rotateL').onclick= rotLeft;
+    document.getElementById('t-rotateR').onclick= rotRight;
+    document.getElementById('t-drop').onclick   = softDrop;
+    document.getElementById('t-start').onclick  = start;
+
+    addEventListener('keydown', (e)=>{
+      if (!panelGames.classList.contains('active')) return;
+      if (['ArrowLeft','ArrowRight','ArrowDown','z','Z','x','X'].includes(e.key)) e.preventDefault();
+      if (e.key==='ArrowLeft') move(-1);
+      else if (e.key==='ArrowRight') move(1);
+      else if (e.key==='ArrowDown') softDrop();
+      else if (e.key==='z' || e.key==='Z') rotLeft();
+      else if (e.key==='x' || e.key==='X') rotRight();
+      else if (e.key===' ') { if (!running) start(); }
+    });
+
     update();
   })();
   </script>
